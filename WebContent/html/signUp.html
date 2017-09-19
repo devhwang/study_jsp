@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>회원가입 화면</title>
+<style type="text/css">
+	table,tr,th,td {
+						border: solid 1px grey;
+					}
+	table {
+		width: 400px;
+	}
+	
+	input[type="text"],input[type="password"]{
+		width: 80%;
+	}
+	
+	#container{
+		float: left;
+		margin: 0 auto;
+	}
+
+</style>
+</head>
+<body>
+<form target="" action="">
+	<div id="container">
+		<span>◎ 회원가입</span>
+		<table>
+			<tr>
+				<th>아이디*</th>
+				<td><input type="text" name="user_id" size="8" placeholder=""></td>
+			</tr>
+			<tr>
+				<th>비밀번호</th>
+				<td><input type="password" name="user_pw" size="8" placeholder=""></td>		
+			</tr>
+			<tr>
+				<th>비밀번호 확인</th>
+				<td><input type="password" name="user_pw_check" size="8" placeholder=""></td>		
+			</tr>
+			<tr>
+				<th>이메일</th>
+				<td><input type="text" name="user_email" size="30" placeholder=""></td>
+			</tr>
+		</table>
+		<input type="button" value="가입">
+		<input type="button" value="취소">
+	</div>
+</form>
+</body>
+</html>
