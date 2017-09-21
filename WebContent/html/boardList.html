@@ -3,50 +3,144 @@
 <head>
 <meta charset="EUC-KR">
 <title>Insert title here</title>
+<link rel="stylesheet" href="../css/common.css" type="text/css">
 <style type="text/css">
-	table,tr,th,td {
-						border: solid 1px grey;
-					}
-	table {
-		width: 400px;
+		
+	#listview {
+		border-collapse: collapse;
+		border-top: 1px solid black;
+		border-left: 1px solid black;
+	}  
+	#listview th, #listview td {
+		border-bottom: 1px solid black;
+		border-right: 1px solid black;
 	}
 	
-	input[type="text"],input[type="password"]{
-		width: 80%;
+	#listview/* 리스트영역 */
+	{
+		width: 800px;
+		height: 200px;
+		text-align: center;
 	}
 	
-	#container{
-		float: left;
-		margin: 0 auto;
+	#search/* 검색영역  */
+	{
+		width: 300px;
+		text-align: center;
+		border: none 0px grey;
+	}
+	
+	#navigator/* 페이징 영역  */
+	{
+		width: 200px;
+		margin : auto;
+		float : left;		
+		width: 300px;
+		
+	}
+	
+	#search input[type="button"],  #search select
+	{
+		width: 100%;
+		hegiht : 100%;
+	}
+		
+	ul 
+	{
+	    list-style:none;
+	    margin:0;
+	    padding:0;
 	}
 
+	li 
+	{
+	    margin: 0 0 0 0;
+	    padding: 0 3px 0 0;
+	    border : 0;
+	    float: left;
+	}
+	
 </style>
 </head>
 <body>
-<form target="" action="">
-	<div id="container">
-		<span>◎ 회원가입</span>
-		<table>
+
+<div class="container">
+  <div class="outer">
+
+    <div class="inner">
+   		<div class="title">◎  게시판 목록</div>
+		<table id="search">
 			<tr>
-				<th>아이디*</th>
-				<td><input type="text" name="user_id" size="8" placeholder=""></td>
-			</tr>
-			<tr>
-				<th>비밀번호</th>
-				<td><input type="password" name="user_pw" size="8" placeholder=""></td>		
-			</tr>
-			<tr>
-				<th>비밀번호 확인</th>
-				<td><input type="password" name="user_pw_check" size="8" placeholder=""></td>		
-			</tr>
-			<tr>
-				<th>이메일</th>
-				<td><input type="text" name="user_email" size="30" placeholder=""></td>
+				<td>
+					<select name="type">
+						<option selected="selected">제목</option>
+						<option>작성자</option>
+					</select>
+				</td>
+				<td>
+					<input type="text">
+				</td>
+				<td>
+					<input type="button" value='검색'>	
+				</td>
 			</tr>
 		</table>
-		<input type="button" value="가입">
-		<input type="button" value="취소">
-	</div>
-</form>
+   		<table id="listview">
+			<tr>
+				<td>글번호</td>
+				<td>제목</td>
+				<td>작성자</td>
+				<td>작성일</td>
+			</tr>
+			<tr>
+				<td>1</td>
+				<td>게시판 목록을 작성하자</td>
+				<td>홍길동</td>
+				<td>2017.09.13</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+		</table>
+   
+		
+		
+		<div class="centered">
+				<ul>
+					<li><input type="button" value="<<"></li>
+					<li><input type="button" value="<"></li>
+					<li><b>1</b></li>
+					<li><a href="#">2</a></li>
+					<li><a href="#">3</a></li>
+					<li><a href="#">4</a></li>
+					<li><a href="#">5</a></li>
+					<li><a href="#">6</a></li>
+					<li><a href="#">7</a></li>
+					<li><a href="#">8</a></li>
+					<li><a href="#">9</a></li>
+					<li><input type="button" value=">>"></li>
+					<li><input type="button" value=">"></li>
+				</ul>
+		</div>	
+    </div>
+  </div>
+</div>
+
+
 </body>
 </html>
