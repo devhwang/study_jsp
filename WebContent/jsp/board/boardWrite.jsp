@@ -1,9 +1,16 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!-- 
+1. HTML로 게시판 입력 페이지를 작성
+2. 경로 및 파일명 : WebContent > html > boradWrite.html
+3. 내용 입력란은 textarea로 생성 
+ -->
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<link rel="stylesheet" href="../css/common.css" type="text/css">
+<link rel="stylesheet" href="../../css/common.css" type="text/css">
 <style type="text/css">
 		
 	#view {
@@ -49,8 +56,8 @@
 			</form>
 		</div>
 		<div class="centered">
-			<input type="button" value="저장" onclick="location.href='boardList.html'">
-			<input type="button" value="취소" onclick="location.href='boardList.html'">
+			<input type="button" value="저장" onclick="location.href='boardList.jsp'">
+			<input type="button" value="취소" onclick="location.href='boardList.jsp'">
 		</div>
     </div>
   </div>

@@ -1,9 +1,26 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!-- 
+
+1. 경로 및 파일명 : WebContent > jsp > login > signUp.jsp
+2. 가입 클릭시 아이디, 이름, 비밀번호, 비밀번호 확인, 이메일에 입력값이 있는지 확인 후
+	signProcess.jsp로 submit 하여 로그인 처리
+3. 회원가입 클릭시 회원가입 화면이로 이동
+4. 테이블 : CM_USER
+5. 컬럼 : 아이디 - USER_ID, 이름 - USER_NM, 비밀번호 - USER_PW,  이메일 - EMAIL
+6. signProcess.jsp : 로그인, 회원가입 화면의 request를 받아 DB 처리 후 화면이동
+	- 회원가입 처리 구분값 process="siginup"
+
+※ 유효성검사
+	- 아이디 중복체크
+
+ -->
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>회원가입 화면</title>
-<link rel="stylesheet" href="../css/common.css" type="text/css">
+<link rel="stylesheet" href="../../css/common.css" type="text/css">
 <style type="text/css">
 	
 	table {
@@ -60,7 +77,7 @@
 				
 				<div class="centered">
 					<input type="button" value="회원가입">
-					<input type="button" value="취소" onclick="location.href='signIn.html'">
+					<input type="button" value="취소" onclick="location.href='signIn.jsp'">
 				</div>
 			</div>
 		</div>

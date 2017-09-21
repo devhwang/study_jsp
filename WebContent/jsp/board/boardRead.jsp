@@ -1,9 +1,15 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!-- 
+	HTML로 게시판 상세 페이지를 작성
+	경로 및 파일명 : WebContent > html > boradRead.html
+ -->
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<link rel="stylesheet" href="../css/common.css" type="text/css">
+<link rel="stylesheet" href="../../css/common.css" type="text/css">
 <style type="text/css">
 		
 	#form {
@@ -76,7 +82,7 @@
 			</form>
 		</div>
 		<div class="centered">
-			<input type="button" value="뒤로" onclick="location.href='boardList.html'">
+			<input type="button" value="뒤로" onclick="location.href='boardList.jsp'">
 		</div>
     </div>
   </div>
