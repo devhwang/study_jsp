@@ -18,7 +18,7 @@
 	
 	#listview/* 리스트영역 */
 	{
-		width: 800px;
+		width: 100%;
 		height: 200px;
 		text-align: center;
 	}
@@ -32,10 +32,7 @@
 	
 	#navigator/* 페이징 영역  */
 	{
-		width: 200px;
-		margin : auto;
-		float : left;		
-		width: 300px;
+		width: 230px;
 		
 	}
 	
@@ -68,6 +65,8 @@
   <div class="outer">
 
     <div class="inner">
+    	
+		<div class="centered">
    		<div class="title">◎  게시판 목록</div>
 		<table id="search">
 			<tr>
@@ -85,16 +84,17 @@
 				</td>
 			</tr>
 		</table>
+		
    		<table id="listview">
 			<tr>
-				<td>글번호</td>
-				<td>제목</td>
-				<td>작성자</td>
-				<td>작성일</td>
+				<th>글번호</th>
+				<th>제목</th>
+				<th>작성자</th>
+				<th>작성일</th>
 			</tr>
 			<tr>
 				<td>1</td>
-				<td>게시판 목록을 작성하자</td>
+				<td><a href='boardRead.html'>게시판 목록을 작성하자</a></td>
 				<td>홍길동</td>
 				<td>2017.09.13</td>
 			</tr>
@@ -117,26 +117,29 @@
 				<td>&nbsp;</td>
 			</tr>
 		</table>
-   
 		
 		
-		<div class="centered">
-				<ul>
-					<li><input type="button" value="<<"></li>
-					<li><input type="button" value="<"></li>
-					<li><b>1</b></li>
-					<li><a href="#">2</a></li>
-					<li><a href="#">3</a></li>
-					<li><a href="#">4</a></li>
-					<li><a href="#">5</a></li>
-					<li><a href="#">6</a></li>
-					<li><a href="#">7</a></li>
-					<li><a href="#">8</a></li>
-					<li><a href="#">9</a></li>
-					<li><input type="button" value=">>"></li>
-					<li><input type="button" value=">"></li>
-				</ul>
+		<div id="navigator" class="centered">
+			<ul>
+				<li><input type="button" value="<<"></li>
+				<li><input type="button" value="<"></li>
+				<li><b>1</b></li>
+				<li><a href="#">2</a></li>
+				<li><a href="#">3</a></li>
+				<li><a href="#">4</a></li>
+				<li><a href="#">5</a></li>
+				<li><a href="#">6</a></li>
+				<li><a href="#">7</a></li>
+				<li><a href="#">8</a></li>
+				<li><a href="#">9</a></li>
+				<li><input type="button" value=">>"></li>
+				<li><input type="button" value=">"></li>
+			</ul>
+		</div>
+		
 		</div>	
+		
+		
     </div>
   </div>
 </div>

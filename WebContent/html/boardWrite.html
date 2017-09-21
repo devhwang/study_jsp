@@ -3,8 +3,59 @@
 <head>
 <meta charset="EUC-KR">
 <title>Insert title here</title>
+<link rel="stylesheet" href="../css/common.css" type="text/css">
+<style type="text/css">
+		
+	#view {
+		border-collapse: collapse;
+		border-top: 1px solid black;
+		border-left: 1px solid black;
+	}  
+	#view th, #view td {
+		border-bottom: 1px solid black;
+		border-right: 1px solid black;
+	}
+	
+	#view/* 글작성 폼 영역 */
+	{
+		width: 100%;
+		text-align: left;
+	}
+	
+	
+</style>
 </head>
 <body>
+
+<div class="container">
+  <div class="outer">
+    <div class="inner">
+   		
+   		<div class="centered">
+	   		<div class="title">◎  게시판 입력</div>
+			<form action="" method="post">
+		   		<table id="view">
+					<tr>
+						<th style="width: 30%">제목</th>
+						<td><input type="text" style="width:99%;""></td>
+					</tr>
+					<tr>
+						<th>내용</th>
+						<td style="width: 70%">
+							<textarea rows="" cols="" style="width:99%; height:200px;"></textarea> 
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<div class="centered">
+			<input type="button" value="저장" onclick="location.href='boardList.html'">
+			<input type="button" value="취소" onclick="location.href='boardList.html'">
+		</div>
+    </div>
+  </div>
+</div>
+
 
 </body>
 </html>
