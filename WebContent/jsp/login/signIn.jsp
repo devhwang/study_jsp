@@ -47,10 +47,7 @@
 </style>
 </head>
 <script>
-	window.onload = function(){
 		
-	}
-	
 	function doLogin(){
 		
 		var loginForm = document.getElementById("loginForm");
@@ -71,11 +68,11 @@
 					<table>
 						<tr>
 							<th>아이디*</th>
-							<td><input type="text" name="user_id" size="8" placeholder=""></td>
+							<td><input type="text" name="USER_ID" size="8" placeholder=""></td>
 						</tr>
 						<tr>
 							<th>비밀번호</th>
-							<td><input type="password" name="user_pw" size="8" placeholder=""></td>		
+							<td><input type="password" name="USER_PW" size="8" placeholder=""></td>		
 						</tr>
 					</table>
 					</form>

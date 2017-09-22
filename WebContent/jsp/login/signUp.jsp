@@ -47,36 +47,48 @@
 
 </style>
 </head>
+<script>
+function doJoin(){
+	var joinForm = document.getElementById("joinForm");
+	joinForm.submit();
+}
+
+</script>
 <body>
-<form target="" action="">
+<form id="joinForm" action="signProcess.jsp" method="post">
 	<div class="container">
 		<div class="outer">
 			<div class="inner">
 			
 				<div class="centered">
 					<div class="title">◎ 회원가입</div>
+					<input type="hidden" name="process" value="signup">
 					<table>
 						<tr>
 							<th>아이디*</th>
-							<td><input type="text" name="user_id" size="8" placeholder=""></td>
+							<td><input type="text" name="USER_ID" size="8" placeholder=""></td>
+						</tr>
+						<tr>
+							<th>이름</th>
+							<td><input type="text" name="USER_NM" size="30" placeholder=""></td>
 						</tr>
 						<tr>
 							<th>비밀번호</th>
-							<td><input type="password" name="user_pw" size="8" placeholder=""></td>		
+							<td><input type="password" name="USER_PW" size="8" placeholder=""></td>		
 						</tr>
 						<tr>
 							<th>비밀번호 확인</th>
-							<td><input type="password" name="user_pw_check" size="8" placeholder=""></td>		
+							<td><input type="password" name="USER_PW_CHECK" size="8" placeholder=""></td>		
 						</tr>
 						<tr>
 							<th>이메일</th>
-							<td><input type="text" name="user_email" size="30" placeholder=""></td>
+							<td><input type="text" name="USER_EMAIL" size="30" placeholder=""></td>
 						</tr>
 					</table>
 				</div>
 				
 				<div class="centered">
-					<input type="button" value="회원가입">
+					<input type="button" value="회원가입"  onclick="doJoin()">
 					<input type="button" value="취소" onclick="location.href='signIn.jsp'">
 				</div>
 			</div>
