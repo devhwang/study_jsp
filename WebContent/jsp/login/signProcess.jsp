@@ -89,7 +89,6 @@
 	}
 %>
 <%
-
 	String process = request.getParameter("process");
 	if("signin".equals(process)){
 		Map loginInfo = new HashMap();
