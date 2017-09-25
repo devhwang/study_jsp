@@ -64,7 +64,7 @@
 				<div class="centered">		
 					<div class="title">로그인</div>
 					<form id="loginForm" action="signProcess.jsp" method="post">
-					<input type="hidden" name="process" value="signin">
+					<input type="hidden" name="PROCESS" value="signin">
 					<table>
 						<tr>
 							<th>아이디*</th>

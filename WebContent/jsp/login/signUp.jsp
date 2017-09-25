@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<% request.setCharacterEncoding("UTF-8"); %>
 <!-- 
 
 1. 경로 및 파일명 : WebContent > jsp > login > signUp.jsp
@@ -49,20 +50,60 @@
 </head>
 <script>
 function doJoin(){
-	var joinForm = document.getElementById("joinForm");
-	joinForm.submit();
+	var form = document.getElementById("joinForm");
+	
+	if(!form.USER_ID.value){
+		alert("아이디를 입력하여 주십시오");
+		form.USER_ID.focus();
+		return;
+	}else if(!form.USER_NM.value){
+		alert("이름을 입력하여 주십시오");
+		form.USER_NM.focus();
+		return;
+	}else if(!form.USER_PW.value){
+		alert("비밀번호를 입력하여 주십시오");
+		form.USER_PW.focus();
+		return;
+	}else if(!form.USER_PW_AGAIN.value){
+		alert("비밀번호 확인란을 입력하여 주십시오");
+		form.USER_PW_AGAIN.focus();
+		return;
+	}else  if(!form.EMAIL.value){
+		alert("이메일을 입력하여 주십시오");
+		form.EMAIL.focus();
+		return;
+	}else 
+		
+	if(form.USER_PW.value != form.USER_PW_AGAIN.value){
+		alert("비밀번호와 비밀번호 확인란이 일치하지 않습니다. 확인해주세요");
+		form.USER_PW.value = "";
+		form.USER_PW_AGAIN.value = "";
+		form.USER_PW.focus();
+		return;
+	}
+	
+	//이메일 유효성 검사 정규식
+	var regExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+	if(form.EMAIL.value.match(regExp) == null){
+		alert("올바르지 않은 이메일 형식입니다");
+		form.EMAIL.value = "";
+		form.EMAIL.focus();
+		return;
+	}
+	
+	form.submit();
 }
 
 </script>
 <body>
-<form id="joinForm" action="signProcess.jsp" method="post">
+<form id="joinForm" action="signProcess.jsp" method="post" accept-charset="UTF-8">
 	<div class="container">
 		<div class="outer">
 			<div class="inner">
 			
 				<div class="centered">
 					<div class="title">◎ 회원가입</div>
-					<input type="hidden" name="process" value="signup">
+					<input type="hidden" name="PROCESS" value="signup">
 					<table>
 						<tr>
 							<th>아이디*</th>
@@ -78,11 +119,11 @@ function doJoin(){
 						</tr>
 						<tr>
 							<th>비밀번호 확인</th>
-							<td><input type="password" name="USER_PW_CHECK" size="8" placeholder=""></td>		
+							<td><input type="password" name="USER_PW_AGAIN" size="8" placeholder=""></td>		
 						</tr>
 						<tr>
 							<th>이메일</th>
-							<td><input type="text" name="USER_EMAIL" size="30" placeholder=""></td>
+							<td><input type="text" name="EMAIL" size="30" placeholder=""></td>
 						</tr>
 					</table>
 				</div>

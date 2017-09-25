@@ -1,6 +1,7 @@
 <%@page import="javax.xml.ws.Response"%>
 <%@page import="java.io.*, java.sql.*, java.util.*"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<% request.setCharacterEncoding("UTF-8"); %>
 <%!
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public boolean doLogin(Map loginInfo, Map userInfo) throws Exception {
@@ -87,7 +88,7 @@
 	}
 %>
 <%
-	String process = request.getParameter("process");
+	String process = request.getParameter("PROCESS");
 	if("signin".equals(process)){
 		Map loginInfo = new HashMap();
 		loginInfo.put("USER_ID", request.getParameter("USER_ID"));

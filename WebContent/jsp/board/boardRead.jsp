@@ -1,9 +1,46 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!-- 
-	HTML로 게시판 상세 페이지를 작성
-	경로 및 파일명 : WebContent > html > boradRead.html
- -->
+<%@page import="java.io.*, java.sql.*, java.util.*"%>
+<%
+	Connection conn = null;
+	PreparedStatement pstmt = null;
+	ResultSet rs = null;
+	
+	HashMap<String, String> brdInfo = new HashMap<String, String>();
+	
+	try{	
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		conn = DriverManager.getConnection("jdbc:oracle:thin:@220.76.203.39:1521:UCS", "UCS_STUDY", "qazxsw");
+		
+		String query = 
+				" SELECT A.SEQ, A.TITLE, A.CONTENTS, A.REG_ID, TO_CHAR(A.REG_DATE,'yyyy-mm-dd') REG_DATE, A.MOD_DATE, B.USER_NM AS REG_NM"
+			   +" FROM BOARD A, CM_USER B"
+			   +" WHERE A.REG_ID = B.USER_ID"
+			   +" AND SEQ = ?";
+		
+		pstmt = conn.prepareStatement(query);
+		pstmt.setString(1, request.getParameter("seq"));
+		
+		rs = pstmt.executeQuery();
+		
+		if(rs.next()){
+			brdInfo.put("SEQ",rs.getString("SEQ"));
+			brdInfo.put("TITLE",rs.getString("TITLE"));
+			brdInfo.put("CONTENTS",rs.getString("CONTENTS"));
+			brdInfo.put("REG_ID",rs.getString("REG_ID"));
+			brdInfo.put("REG_NM",rs.getString("REG_NM"));
+			brdInfo.put("REG_DATE",rs.getString("REG_DATE"));
+			brdInfo.put("MOD_DATE",rs.getString("MOD_DATE"));
+		}
+		
+	}catch(Exception e){
+		e.printStackTrace();
+	}finally{
+		if (rs != null) try { rs.close(); } catch(SQLException ex) {ex.getStackTrace();}
+        if (pstmt != null) try { pstmt.close(); } catch(SQLException ex) {ex.getStackTrace();}
+        if (conn != null) try { conn.close(); } catch(SQLException ex) {ex.getStackTrace();}
+	}
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -58,31 +95,29 @@
    		
    		<div class="centered">
 	   		<div class="title">◎  게시판 입력</div>
-			<form action="" method="post">
 		   		<table id="form">
 					<tr>
 						<th style="width: 25%">작성자</th>
-						<td style="width: 25%">홍길동</td>
+						<td style="width: 25%"><%= brdInfo.get("REG_NM")%> </td>
 						<th style="width: 25%">작성일</th>
-						<td style="width: 25%">2017.09.13</td>
+						<td style="width: 25%"><%= brdInfo.get("REG_DATE") %></td>
 					</tr>
 					<tr>
 						<th>제목</th>
 						<td colspan="3">
-							게시판 목록을 작성하자 
+							<%= brdInfo.get("TITLE") %>
 						</td>
 					</tr>
 					<tr>
 						<th>내용</th>
 						<td colspan="3" style="height:200px">
-							게시판 상세를 입력 
+							<%= brdInfo.get("CONTENTS") %> 
 						</td>
 					</tr>
 				</table>
-			</form>
 		</div>
 		<div class="centered">
-			<input type="button" value="뒤로" onclick="location.href='boardList.jsp'">
+			<input type="button" value="뒤로" onclick="history.back(-1)">
 		</div>
     </div>
   </div>

@@ -1,5 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<% request.setCharacterEncoding("UTF-8"); %>
 <!-- 
 1. HTML로 게시판 입력 페이지를 작성
 2. 경로 및 파일명 : WebContent > html > boradWrite.html
@@ -18,6 +18,7 @@
 		border-top: 1px solid black;
 		border-left: 1px solid black;
 	}  
+	
 	#view th, #view td {
 		border-bottom: 1px solid black;
 		border-right: 1px solid black;
@@ -31,33 +32,51 @@
 	
 	
 </style>
+<script>
+	function fn_submit(){
+		var form = document.getElementById("boardWriteForm");
+		
+		if(!form.TITLE.value){
+			alert("제목을 입력하여 주십시오");
+			form.TITLE.focus();
+			return;
+		}else if(!form.CONTENTS.value){
+			alert("내용을 입력하여 주십시오");
+			form.CONTENTS.focus();
+			return;
+		}
+		
+		form.submit();
+	}
+	
+</script>
 </head>
 <body>
 
 <div class="container">
   <div class="outer">
     <div class="inner">
-   		
    		<div class="centered">
 	   		<div class="title">◎  게시판 입력</div>
-			<form action="" method="post">
+			<form id="boardWriteForm"action="boardProcess.jsp" method="post" accept-charset="UTF-8">
+				<input type="hidden" name="PROCESS" value="write">
 		   		<table id="view">
 					<tr>
 						<th style="width: 30%">제목</th>
-						<td><input type="text" style="width:99%;""></td>
+						<td><input type="text" name="TITLE" style="width:99%;"></td>
 					</tr>
 					<tr>
 						<th>내용</th>
 						<td style="width: 70%">
-							<textarea rows="" cols="" style="width:99%; height:200px;"></textarea> 
+							<textarea name="CONTENTS" rows="" cols="" style="width:99%; height:200px;"></textarea> 
 						</td>
 					</tr>
 				</table>
 			</form>
 		</div>
 		<div class="centered">
-			<input type="button" value="저장" onclick="location.href='boardList.jsp'">
-			<input type="button" value="취소" onclick="location.href='boardList.jsp'">
+			<input type="button" value="저장" onclick="fn_submit()">
+			<input type="button" value="취소" onclick="history.back(-1)">
 		</div>
     </div>
   </div>

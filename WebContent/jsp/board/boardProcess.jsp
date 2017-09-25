@@ -1,9 +1,9 @@
 <%@page import="javax.xml.ws.Response"%>
 <%@page import="java.io.*, java.sql.*, java.util.*"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<% request.setCharacterEncoding("UTF-8"); %>
 <%!
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	public boolean selectBoardList(Map loginInfo, Map userInfo) throws Exception {
+	public boolean doWrite(Map brdInfo) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -12,21 +12,17 @@
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			conn = DriverManager.getConnection("jdbc:oracle:thin:@220.76.203.39:1521:UCS", "UCS_STUDY", "qazxsw");
 			
-			pstmt = conn.prepareStatement("SELECT USER_ID, USER_PW, USER_NM, EMAIL FROM CM_USER WHERE USER_ID = ? AND USER_PW = ?");
-			pstmt.setString(1, (String) loginInfo.get("USER_ID"));
-			pstmt.setString(2, (String) loginInfo.get("USER_PW"));
-
-			rs = pstmt.executeQuery();
+			pstmt = conn.prepareStatement("INSERT INTO BOARD (SEQ,TITLE,CONTENTS,REG_ID,REG_DATE,MOD_DATE) VALUES ((SELECT MAX(SEQ)+1 FROM BOARD),?,?,?,SYSDATE,SYSDATE)");
+			pstmt.setString(1, (String) brdInfo.get("TITLE"));
+			pstmt.setString(2, (String) brdInfo.get("CONTENTS"));
+			pstmt.setString(3, (String) brdInfo.get("REG_ID"));
 			
-			if(rs.next()) {
-				userInfo.put("USER_ID", rs.getString("USER_ID"));
-				userInfo.put("USER_NM", rs.getString("USER_NM"));
-				userInfo.put("EMAIL", rs.getString("EMAIL"));
-				
-				return true;
+			if(pstmt.executeUpdate()>0){
+				return true;	
+			}else{
+				return false;
 			}
 			
-			return false;
 		} catch (Exception e){
 			try {
 				conn.rollback();
@@ -38,50 +34,29 @@
 			if (rs != null) try { rs.close(); } catch(SQLException ex) {ex.getStackTrace();}
 	        if (pstmt != null) try { pstmt.close(); } catch(SQLException ex) {ex.getStackTrace();}
 	        if (conn != null) try { conn.close(); } catch(SQLException ex) {ex.getStackTrace();}
-		}			
+		}	
 	}
 %>
 <%
-	String process = request.getParameter("process");
-	if("signin".equals(process)){
-		Map loginInfo = new HashMap();
-		loginInfo.put("USER_ID", request.getParameter("USER_ID"));
-		loginInfo.put("USER_PW", request.getParameter("USER_PW"));
+	String process = request.getParameter("PROCESS");
+	if("write".equals(process)){
 		
-		Map userInfo = new HashMap();
-		if(!doLogin(loginInfo, userInfo)) {
-			// 로그인 실패
+		Map brdInfo = new HashMap();
+		brdInfo.put("TITLE", request.getParameter("TITLE")); System.out.println(request.getParameter("TITLE"));
+		brdInfo.put("CONTENTS", request.getParameter("CONTENTS")); System.out.println(request.getParameter("CONTENTS"));
+		brdInfo.put("REG_ID", session.getAttribute("USER_ID")); System.out.println(session.getAttribute("USER_ID"));
+		
+		if(doWrite(brdInfo)){
 			PrintWriter msg = response.getWriter();
 			msg.println("<script>");
-			msg.println("alert('"+"아이디 또는 비밀번호가 일치하지 않습니다"+"')");
-			msg.println("location.href='signIn.jsp'");
+			msg.println("alert('"+"성공적으로 글을 등록했습니다"+"')");
+			msg.println("location.href='boardList.jsp'");
 			msg.println("</script>");
-			
-		} else {
-			for(Object key : userInfo.keySet()) {
-				session.setAttribute((String)key, userInfo.get(key));
-			}
-			//  페이지 이동
-			response.sendRedirect("../board/boardList.jsp");						
-		}
-	} else if("signup".equals(process)){
-		Map applyInfo = new HashMap();
-		applyInfo.put("USER_ID", request.getParameter("USER_ID"));
-		applyInfo.put("USER_PW", request.getParameter("USER_PW"));
-		applyInfo.put("USER_NM", request.getParameter("USER_NM"));
-		applyInfo.put("EMAIL", request.getParameter("EMAIL"));
-	
-		if(!createAccount(applyInfo)) {
+		}else{
 			PrintWriter msg = response.getWriter();
 			msg.println("<script>");
-			msg.println("alert('"+"이미 존재하는 계정입니다"+"')");
-			msg.println("location.href='signUp.jsp'");
-			msg.println("</script>");
-		} else {
-			PrintWriter msg = response.getWriter();
-			msg.println("<script>");
-			msg.println("alert('"+"가입에 성공하였습니다."+"')");
-			msg.println("location.href='signIn.jsp'");
+			msg.println("alert('"+"등록에 실패하였습니다"+"')");
+			msg.println("history.back(-1)");
 			msg.println("</script>");
 		}
 	}
