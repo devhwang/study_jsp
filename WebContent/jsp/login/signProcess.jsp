@@ -22,11 +22,10 @@
 				userInfo.put("USER_ID", rs.getString("USER_ID"));
 				userInfo.put("USER_NM", rs.getString("USER_NM"));
 				userInfo.put("EMAIL", rs.getString("EMAIL"));
-				
 				return true;
 			}
-			
 			return false;
+			
 		} catch (Exception e){
 			try {
 				conn.rollback();
@@ -65,7 +64,6 @@
 			}
 			
 			pstmt = conn.prepareStatement("INSERT INTO CM_USER(USER_ID,USER_PW,USER_NM,EMAIL) VALUES (?,?,?,?)");
-			
 			pstmt.setString(1, (String) applyInfo.get("USER_ID"));
 			pstmt.setString(2, (String) applyInfo.get("USER_PW"));
 			pstmt.setString(3, (String) applyInfo.get("USER_NM"));
