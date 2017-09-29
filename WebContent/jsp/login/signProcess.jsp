@@ -28,12 +28,8 @@
 			return false;
 			
 		} catch (Exception e){
-			try {
-				conn.rollback();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-			throw e;
+			e.printStackTrace();
+			return false;
 		}finally{
 			if (rs != null) try { rs.close(); } catch(SQLException ex) {ex.getStackTrace();}
 	        if (pstmt != null) try { pstmt.close(); } catch(SQLException ex) {ex.getStackTrace();}
@@ -87,8 +83,29 @@
 		}	
 	}
 %>
+<%!
+	//jsp 메시지 출력용 메소드
+	public String pushMsg(String msg, String location){
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append("<script>");//--script 영역시작
+		
+		sb.append("alert('"+msg+"');");//출력할 메시지 설정
+		if("back".equals(location)){//경로가 back이면 
+			sb.append("history.back(-1);");//뒤로보낸다
+		}else{
+			sb.append("location.href='"+location+"';");//아니면 경로로 이동
+		}
+		
+		sb.append("</script>");//--script 영역종료
+		
+		return sb.toString();
+	}
+%>
 <%
+	PrintWriter pw = response.getWriter();
 	String process = request.getParameter("PROCESS");
+	
 	if("signin".equals(process)){
 		Map loginInfo = new HashMap();
 		loginInfo.put("USER_ID", request.getParameter("USER_ID"));
@@ -97,18 +114,13 @@
 		Map userInfo = new HashMap();
 		if(!doLogin(loginInfo, userInfo)) {
 			// 로그인 실패
-			PrintWriter msg = response.getWriter();
-			msg.println("<script>");
-			msg.println("alert('"+"아이디 또는 비밀번호가 일치하지 않습니다"+"')");
-			msg.println("location.href='signIn.jsp'");
-			msg.println("</script>");
-			
+			pw.println(pushMsg("아이디 또는 비밀번호가 일치하지 않습니다","back"));
 		} else {
 			for(Object key : userInfo.keySet()) {
 				session.setAttribute((String)key, userInfo.get(key));
 			}
-			//  페이지 이동
-			response.sendRedirect("../board/boardList.jsp");						
+			// 로그인 성공 페이지 이동
+			pw.println(pushMsg(session.getAttribute("USER_NM")+"님 환영합니다!","../board/boardList.jsp"));
 		}
 	} else if("signup".equals(process)){
 		Map applyInfo = new HashMap();
@@ -118,17 +130,11 @@
 		applyInfo.put("EMAIL", request.getParameter("EMAIL"));
 	
 		if(!createAccount(applyInfo)) {
-			PrintWriter msg = response.getWriter();
-			msg.println("<script>");
-			msg.println("alert('"+"이미 존재하는 계정입니다"+"')");
-			msg.println("location.href='signUp.jsp'");
-			msg.println("</script>");
+			//중복계정시 back
+			pw.println(pushMsg("이미 존재하는 계정입니다","back"));
 		} else {
-			PrintWriter msg = response.getWriter();
-			msg.println("<script>");
-			msg.println("alert('"+"가입에 성공하였습니다."+"')");
-			msg.println("location.href='signIn.jsp'");
-			msg.println("</script>");
+			//가업성공시 페이지 이동
+			pw.println(pushMsg("가입에 성공하였습니다","signIn.jsp"));
 		}
 	}
  %>

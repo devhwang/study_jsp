@@ -54,8 +54,6 @@
 					  +" ORDER BY SEQ DESC)C)"
 		+" WHERE RNUM > ? AND RNUM <=?";
 
-		System.out.println(query);
-
 		pstmt = conn.prepareStatement(query);
 		pstmt.setInt(1, minRowNum);
 		pstmt.setInt(2, maxRowNum);
