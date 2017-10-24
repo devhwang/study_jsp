@@ -45,8 +45,8 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
-<link rel="stylesheet" href="../../css/common.css" type="text/css">
+<title>게시글 읽기</title>
+<link rel="stylesheet" href="<%= request.getContextPath() %>/css/common.css" type="text/css">
 <style type="text/css">
 		
 	#form {

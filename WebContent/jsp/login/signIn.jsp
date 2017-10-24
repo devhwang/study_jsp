@@ -18,7 +18,7 @@
 <head>
 <meta charset="UTF-8">
 <title>로그인 화면</title>
-<link rel="stylesheet" href="../../css/common.css" type="text/css">
+<link rel="stylesheet" href="<%= request.getContextPath() %>/css/common.css" type="text/css">
 <style type="text/css">
 	
 	table {
@@ -49,7 +49,6 @@
 <script>
 		
 	function doLogin(){
-		
 		var loginForm = document.getElementById("loginForm");
 		loginForm.submit();
 		
@@ -63,8 +62,7 @@
 			
 				<div class="centered">		
 					<div class="title">로그인</div>
-					<form id="loginForm" action="signProcess.jsp" method="post">
-					<input type="hidden" name="PROCESS" value="signin">
+					<form id="loginForm" action="../sign/signin" method="post">
 					<table>
 						<tr>
 							<th>아이디*</th>
@@ -80,7 +78,7 @@
 				
 				<div class="centered">
 					<input type="button" value="로그인" onclick="doLogin()">
-					<input type="button" value="회원가입" onclick="location.href='../login/signUp.jsp'">
+					<input type="button" value="회원가입" onclick="location.href='../sign/form'">
 				</div>
 				
 			</div>

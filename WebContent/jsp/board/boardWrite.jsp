@@ -10,7 +10,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<link rel="stylesheet" href="../../css/common.css" type="text/css">
+<link rel="stylesheet" href="<%= request.getContextPath() %>/css/common.css" type="text/css">
 <style type="text/css">
 		
 	#view {
@@ -58,8 +58,7 @@
     <div class="inner">
    		<div class="centered">
 	   		<div class="title">◎  게시판 입력</div>
-			<form id="boardWriteForm"action="boardProcess.jsp" method="post" accept-charset="UTF-8">
-				<input type="hidden" name="PROCESS" value="write">
+			<form id="boardWriteForm"action="../board/write" method="post" accept-charset="UTF-8">
 		   		<table id="view">
 					<tr>
 						<th style="width: 30%">제목</th>
