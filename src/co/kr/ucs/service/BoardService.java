@@ -9,13 +9,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import co.kr.ucs.dao.DBConnectionPool;
+import co.kr.ucs.dao.DBConnectionPoolManager;
 import co.kr.ucs.dao.DBManager;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class BoardService {
 
+	DBConnectionPoolManager dbPoolManager = DBConnectionPoolManager.getInstance();
+	DBConnectionPool dbPool;
+
+	public BoardService() {
+		dbPoolManager.setDBPool(DBManager.getUrl(), DBManager.getId(), DBManager.getPw());
+		dbPool = dbPoolManager.getDBPool();
+	}
+	
 	public ArrayList getlist(Map searchInfo) throws Exception{
-		Connection conn = null;
+		Connection conn = dbPool.getConnection();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 			
@@ -97,9 +107,13 @@ public class BoardService {
 		}catch(Exception e){
 			e.printStackTrace();
 		}finally{
-			DBManager.close(rs);
+/*			DBManager.close(rs);
 			DBManager.close(pstmt);
 			DBManager.close(conn);
+			
+*/		
+			dbPool.freeConnection(conn);
+			DBManager.close(null, pstmt);
 		}
 		
 		searchInfo.put("BLOCKSIZE",Integer.toString(BLOCKSIZE));
@@ -116,7 +130,8 @@ public class BoardService {
 	
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public boolean doWrite(Map brdInfo) throws Exception {
-		Connection conn = DBManager.getConnection();
+		//Connection conn = DBManager.getConnection();
+		Connection conn = dbPool.getConnection(); 
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
@@ -140,9 +155,11 @@ public class BoardService {
 			}
 			throw e;
 		}finally{
-			DBManager.close(rs);
+			/*DBManager.close(rs);
 			DBManager.close(pstmt);
-			DBManager.close(conn);
+			DBManager.close(conn);*/
+			dbPool.freeConnection(conn);
+			DBManager.close(null, pstmt);
 		}	
 	}
 }

@@ -7,48 +7,42 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DBManager {
+	private final static String url = "jdbc:oracle:thin:@220.76.203.39:1521:UCS";
+	private final static String id  = "UCS_STUDY";
+	private final static String pw  = "qazxsw";
 	
-	public static Connection getConnection(){
-		Connection conn=null;
+	public Connection getConnection()throws SQLException, ClassNotFoundException{
+		Connection conn = null;
 		
-		try{
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			conn = DriverManager.getConnection("jdbc:oracle:thin:@220.76.203.39:1521:UCS", "UCS_STUDY", "qazxsw");
-			
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		conn=DriverManager.getConnection(url,id,pw);
+		
+		System.out.println("DB 연결성공");
 		
 		return conn;
 	}
 	
-	public static void close(Connection conn){
-		if(conn!=null){
-			try{
-				conn.close();
-			}catch(SQLException e){
-				e.printStackTrace();
-			}
-		}
+	public void close(ResultSet rs, PreparedStatement pstmt, Connection conn) {
+		if(rs != null) try{rs.close();}catch(Exception ex){}
+		if(pstmt != null) try{pstmt.close();}catch(Exception ex){}
+		if(conn  != null) try{conn.close(); }catch(Exception ex){}
 	}
 	
-	public static void close(PreparedStatement pstmt){
-		if(pstmt!=null){
-			try{
-				pstmt.close();
-			}catch(SQLException e){
-				e.printStackTrace();
-			}
-		}
+	public static void close(ResultSet rs, PreparedStatement pstmt) {
+		if(rs != null) try{rs.close();}catch(Exception ex){}
+		if(pstmt != null) try{pstmt.close();}catch(Exception ex){}
 	}
 	
-	public static void close(ResultSet rs){
-		if(rs!=null){
-			try{
-				rs.close();
-			}catch(SQLException e){
-				e.printStackTrace();
-			}
-		}
+	public static String getUrl() {
+		return url;
 	}
+
+	public static String getId() {
+		return id;
+	}
+
+	public static String getPw() {
+		return pw;
+	}
+
 }

@@ -5,13 +5,25 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
+
+import co.kr.ucs.dao.DBConnectionPool;
+import co.kr.ucs.dao.DBConnectionPoolManager;
 import co.kr.ucs.dao.DBManager;
 
 public class SignService {
 	
+	DBConnectionPoolManager dbPoolManager = DBConnectionPoolManager.getInstance();
+	DBConnectionPool dbPool;
+	
+	public SignService() {
+		dbPoolManager.setDBPool(DBManager.getUrl(), DBManager.getId(), DBManager.getPw());
+		dbPool = dbPoolManager.getDBPool();
+	}
+	
 	public boolean doLogin(Map userInfo) throws Exception {
 		
-		Connection conn = DBManager.getConnection();
+		//Connection conn = DBManager.getConnection();
+		Connection conn = dbPool.getConnection();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
@@ -33,14 +45,17 @@ public class SignService {
 			e.printStackTrace();
 			return false;		
 		}finally{
-			DBManager.close(rs);
+			/*DBManager.close(rs);
 			DBManager.close(pstmt);
-			DBManager.close(conn);
+			DBManager.close(conn);*/
+			dbPool.freeConnection(conn);
+			DBManager.close(null, pstmt);
 		}	
 	}
 	
 	public boolean createAccount(Map userInfo) throws Exception {
-		Connection conn = DBManager.getConnection();
+		//Connection conn = DBManager.getConnection();
+		Connection conn = dbPool.getConnection();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
@@ -71,9 +86,11 @@ public class SignService {
 			}
 			throw e;
 		}finally{
-			DBManager.close(rs);
+			/*DBManager.close(rs);
 			DBManager.close(pstmt);
-			DBManager.close(conn);
+			DBManager.close(conn);*/
+			dbPool.freeConnection(conn);
+			DBManager.close(null, pstmt);
 		}	
 	}
 }
