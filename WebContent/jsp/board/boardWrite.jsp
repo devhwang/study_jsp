@@ -34,22 +34,22 @@
 </style>
 <script>
 	function fn_submit(){
-		var form = document.getElementById("boardWriteForm");
-		
-		if(!form.TITLE.value){
+			
+		if($("#TITLE").val()==""){
 			alert("제목을 입력하여 주십시오");
-			form.TITLE.focus();
+			$("#TITLE").focus();
 			return;
-		}else if(!form.CONTENTS.value){
+		}else if($("#CONTENTS").val()==""){
 			alert("내용을 입력하여 주십시오");
-			form.CONTENTS.focus();
+			$("#CONTENTS").focus();
 			return;
 		}
 		
-		form.submit();
+		$("#boardWriteForm").submit();
 	}
 	
 </script>
+<script  src="http://code.jquery.com/jquery-latest.min.js"></script>
 </head>
 <body>
 
@@ -62,12 +62,12 @@
 		   		<table id="view">
 					<tr>
 						<th style="width: 30%">제목</th>
-						<td><input type="text" name="TITLE" style="width:99%;"></td>
+						<td><input type="text" id="TITLE" name="TITLE" style="width:99%;"></td>
 					</tr>
 					<tr>
 						<th>내용</th>
 						<td style="width: 70%">
-							<textarea name="CONTENTS" rows="" cols="" style="width:99%; height:200px;"></textarea> 
+							<textarea id="CONTENT"  name="CONTENTS" rows="" cols="" style="width:99%; height:200px;"></textarea> 
 						</td>
 					</tr>
 				</table>

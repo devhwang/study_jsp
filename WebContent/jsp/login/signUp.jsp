@@ -95,6 +95,7 @@ function doJoin(){
 }
 
 </script>
+<script  src="http://code.jquery.com/jquery-latest.min.js"></script>
 <body>
 <form id="joinForm" action="../sign/signup" method="post" accept-charset="UTF-8">
 	<div class="container">

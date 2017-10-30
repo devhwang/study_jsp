@@ -47,14 +47,26 @@
 </style>
 </head>
 <script>
-		
+
+	
 	function doLogin(){
-		var loginForm = document.getElementById("loginForm");
-		loginForm.submit();
+
+		if(!$("#USER_ID").val()){
+			alert("아이디를 입력하여 주십시오");
+			$("#USER_ID").focus();
+			return;
+			
+		}else if(!$("#USER_PW").val()){
+			alert("패스워드를 입력하여 주십시오");
+			$("#USER_PW").focus();
+			return;
+		}
 		
+		$("#loginForm").submit();		
 	}
 
 </script>
+<script  src="http://code.jquery.com/jquery-latest.min.js"></script>
 <body>
 	<div class="container">
 		<div class="outer">
@@ -66,11 +78,11 @@
 					<table>
 						<tr>
 							<th>아이디*</th>
-							<td><input type="text" name="USER_ID" size="8" placeholder=""></td>
+							<td><input type="text" id="USER_ID" name="USER_ID" size="8" placeholder=""></td>
 						</tr>
 						<tr>
 							<th>비밀번호</th>
-							<td><input type="password" name="USER_PW" size="8" placeholder=""></td>		
+							<td><input type="password" id="USER_PW"  name="USER_PW" size="8" placeholder=""></td>		
 						</tr>
 					</table>
 					</form>

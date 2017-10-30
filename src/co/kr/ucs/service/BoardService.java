@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import co.kr.ucs.dao.DBConnectionPool;
 import co.kr.ucs.dao.DBConnectionPoolManager;
 import co.kr.ucs.dao.DBManager;
@@ -16,14 +19,15 @@ import co.kr.ucs.dao.DBManager;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class BoardService {
 
+	private static final Logger logger = LoggerFactory.getLogger(BoardService.class);
+
 	DBConnectionPoolManager dbPoolManager = DBConnectionPoolManager.getInstance();
 	DBConnectionPool dbPool;
-
+	
 	public BoardService() {
 		dbPoolManager.setDBPool(DBManager.getUrl(), DBManager.getId(), DBManager.getPw());
 		dbPool = dbPoolManager.getDBPool();
 	}
-	
 	public ArrayList getlist(Map searchInfo) throws Exception{
 		Connection conn = dbPool.getConnection();
 		PreparedStatement pstmt = null;
@@ -45,9 +49,6 @@ public class BoardService {
 		ArrayList<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
 				
 		try{	
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			conn = DriverManager.getConnection("jdbc:oracle:thin:@220.76.203.39:1521:UCS", "UCS_STUDY", "qazxsw");
-			
 			type = (String) searchInfo.get("type");
 			keyword = (String) searchInfo.get("keyword");
 			
@@ -76,13 +77,13 @@ public class BoardService {
 						  +" ORDER BY SEQ DESC)C)"
 			+" WHERE RNUM > ? AND RNUM <=?";
 
-			System.out.println(query);
+			
+			logger.info("쿼리 : {}", query);
 
 			pstmt = conn.prepareStatement(query);
 			pstmt.setInt(1, minRowNum);
 			pstmt.setInt(2, maxRowNum);
 			
-			System.out.println(minRowNum +"~"+maxRowNum);
 			rs = pstmt.executeQuery();
 			Map brdInfo;
 			while(rs.next()){
@@ -106,14 +107,11 @@ public class BoardService {
 			
 		}catch(Exception e){
 			e.printStackTrace();
+			logger.error("에러 : {}", e.getMessage());
 		}finally{
-/*			DBManager.close(rs);
-			DBManager.close(pstmt);
-			DBManager.close(conn);
-			
-*/		
-			dbPool.freeConnection(conn);
-			DBManager.close(null, pstmt);
+			//logger.info("DB 연결종료");
+			logger.info(dbPool.freeConnection(conn));
+			DBManager.close(rs, pstmt);
 		}
 		
 		searchInfo.put("BLOCKSIZE",Integer.toString(BLOCKSIZE));
@@ -130,7 +128,6 @@ public class BoardService {
 	
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public boolean doWrite(Map brdInfo) throws Exception {
-		//Connection conn = DBManager.getConnection();
 		Connection conn = dbPool.getConnection(); 
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -155,11 +152,9 @@ public class BoardService {
 			}
 			throw e;
 		}finally{
-			/*DBManager.close(rs);
-			DBManager.close(pstmt);
-			DBManager.close(conn);*/
+			//logger.info("DB 연결종료");
 			dbPool.freeConnection(conn);
-			DBManager.close(null, pstmt);
+			DBManager.close(rs, pstmt);
 		}	
 	}
 }

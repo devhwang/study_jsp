@@ -11,37 +11,37 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 
 /**
- * 다중접속 단위 테스트용 클래스
+ * 다중접속 환경 단위 테스트용 클래스
  * @author Kiha
  *
  */
 
 public class DBConnectionTest {
 
-	ArrayBlockingQueue<ThreadT> abq = new ArrayBlockingQueue<DBConnectionTest.ThreadT>(1000);
+	ArrayBlockingQueue<ThreadA> queue = new ArrayBlockingQueue<DBConnectionTest.ThreadA>(1000);
 
 	DBConnectionPoolManager dbPoolManager = DBConnectionPoolManager.getInstance();
 	DBConnectionPool dbPool;
 	
 	public DBConnectionTest() throws Exception {
 
-		dbPoolManager.setDBPool(DBManager.getUrl(), DBManager.getId(), DBManager.getPw());
-		dbPool = dbPoolManager.getDBPool();
+		//dbPoolManager.setDBPool(DBManager.getUrl(), DBManager.getId(), DBManager.getPw());//PoolName 미지정
+		dbPoolManager.setDBPool("poolNameTest",DBManager.getUrl(), DBManager.getId(), DBManager.getPw(),1,20);
+		dbPool = dbPoolManager.getDBPool("poolNameTest");
 		
 		for(int i = 0; i < 1000; i++) {
 			try{
-				abq.offer(new ThreadT(dbPool));
+				queue.offer(new ThreadA(dbPool));
 				go();
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
 		}
-
 		
 	}
 	
 	public void go() throws Exception {	
-		abq.poll().start();		
+		queue.poll().start();		
 	}
 	
 	public static void main(String[] args) {
@@ -52,10 +52,10 @@ public class DBConnectionTest {
 		}
 	}
 	
-	class ThreadT extends Thread{	
+	class ThreadA extends Thread{	
 		DBConnectionPool dbPool;
 		
-		public ThreadT(DBConnectionPool cp) {
+		public ThreadA(DBConnectionPool cp) {
 			this.dbPool = cp;
 		}
 		
@@ -77,24 +77,12 @@ public class DBConnectionTest {
 				rs = pstmt.executeQuery();
 				rs.next();
 				
-				System.out.println(MessageFormat.format("{0} : 결과 {1}", new Object[]{conn.toString(), rs.getString("K")}));
+				//System.out.println(MessageFormat.format("{0} : 결과 {1}", new Object[]{conn.toString(), rs.getString("K")}));
 			} catch (Exception e){
-				e.printStackTrace();
-				try {
-					conn.rollback();
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-				}
+				e.printStackTrace();				
 			}finally{
-				if (rs != null)
-					try {
-						rs.close();
-					} catch (SQLException e) {}
-		        if (pstmt != null)
-					try {
-						pstmt.close();
-					} catch (SQLException e) {}
 		        dbPool.freeConnection(conn);
+		        DBManager.close(rs, pstmt);
 			}	
 		}
 	}

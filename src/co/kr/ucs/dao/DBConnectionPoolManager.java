@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DBConnectionPoolManager {
-	
 	final static String DEFAULT_POOLNAME = "DEFAULT";
 	final static Map<String, DBConnectionPool> dbPool = new HashMap<>();
 	final static DBConnectionPoolManager instance = new DBConnectionPoolManager();
@@ -27,18 +26,18 @@ public class DBConnectionPoolManager {
 	
 	//DB Pool 생성
 	public void setDBPool(String poolName, String url, String id, String pw, int initConns, int maxConns) {
-		if(!dbPool.containsKey(poolName)) {
+		if(!dbPool.containsKey(poolName))  {
 			DBConnectionPool connPool = new DBConnectionPool(url, id, pw, initConns, maxConns);
 			dbPool.put(poolName, connPool);
 		}
 	}
-	//DB Pool 반환
+	//Pool에서 커넥션 획득
 	public DBConnectionPool getDBPool(){
 		return getDBPool(DEFAULT_POOLNAME);
 	};
 	
-	//DB Pool 반환
-	DBConnectionPool getDBPool(String poolName){
+	//Pool에서 커넥션 획득
+	DBConnectionPool getDBPool(String poolName){//poolName을 지정해준경우
 		return dbPool.get(poolName);
 	};
 	
