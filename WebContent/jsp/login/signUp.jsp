@@ -21,7 +21,7 @@
 <head>
 <meta charset="UTF-8">
 <title>회원가입 화면</title>
-<link rel="stylesheet" href="../../css/common.css" type="text/css">
+<link rel="stylesheet" href="<%= request.getContextPath() %>/css/common.css" type="text/css">
 <style type="text/css">
 	
 	table {
@@ -96,7 +96,7 @@ function doJoin(){
 
 </script>
 <body>
-<form id="joinForm" action="signProcess.jsp" method="post" accept-charset="UTF-8">
+<form id="joinForm" action="../sign/signup" method="post" accept-charset="UTF-8">
 	<div class="container">
 		<div class="outer">
 			<div class="inner">
@@ -130,7 +130,7 @@ function doJoin(){
 				
 				<div class="centered">
 					<input type="button" value="회원가입"  onclick="doJoin()">
-					<input type="button" value="취소" onclick="location.href='signIn.jsp'">
+					<input type="button" value="취소" onclick="location.href='../sign/main'">
 				</div>
 			</div>
 		</div>
