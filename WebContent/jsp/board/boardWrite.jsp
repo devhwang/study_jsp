@@ -51,6 +51,7 @@
 		var param = {
 			"TITLE" : title.val(),
 			"CONTENTS" : contents.val()
+			"REG_ID" : 
 		}
 	
 		$.ajax({
