@@ -9,4 +9,23 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
+  
+  <servlet>
+    <servlet-name>sign</servlet-name>
+    <servlet-class>co.kr.ucs.controller.SignController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>sign</servlet-name>
+    <url-pattern>/sign/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>board</servlet-name>
+    <servlet-class>co.kr.ucs.controller.BoardController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>board</servlet-name>
+    <url-pattern>/board/*</url-pattern>
+  </servlet-mapping>
+  
 </web-app>

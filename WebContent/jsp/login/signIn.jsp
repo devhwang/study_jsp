@@ -47,22 +47,49 @@
 </style>
 </head>
 <script>
-
-	
 	function doLogin(){
 
-		if(!$("#USER_ID").val()){
+		var userId = $("#USER_ID");
+		var userPw = $("#USER_PW");
+		
+		if(!userId.val()){
 			alert("아이디를 입력하여 주십시오");
-			$("#USER_ID").focus();
+			userId.focus();
 			return;
 			
-		}else if(!$("#USER_PW").val()){
+		}else if(!userPw.val()){
 			alert("패스워드를 입력하여 주십시오");
-			$("#USER_PW").focus();
+			userPw.focus();
 			return;
 		}
 		
-		$("#loginForm").submit();		
+		var param = {
+			'USER_ID' : userId.val(),
+			'USER_PW' : userPw.val()
+		}
+		
+		$.ajax({
+			url:'<%= request.getContextPath()%>/sign/signin',
+			data: {'param' : JSON.stringify(param)},
+			type:'POST',
+			contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+			dataType:'json',
+			error:function(request,status,error){
+		    	alert("[error code] : "+ request.status + "\n\n[message] :\n\n " + request.responseText + "\n[error msg] :\n " + error); //에러상황
+		    },
+			success:function(data){
+				if(data['error']){
+					alert(data['error']);
+					return;
+				}
+				
+				if(data['success']){
+					alert(data['success']);
+				}
+				
+				location.href='<%= request.getContextPath()%>/board/main'
+			}
+		});
 	}
 
 </script>
@@ -74,7 +101,7 @@
 			
 				<div class="centered">		
 					<div class="title">로그인</div>
-					<form id="loginForm" action="../sign/signin" method="post">
+					<form id="loginForm">
 					<table>
 						<tr>
 							<th>아이디*</th>
@@ -90,7 +117,7 @@
 				
 				<div class="centered">
 					<input type="button" value="로그인" onclick="doLogin()">
-					<input type="button" value="회원가입" onclick="location.href='../sign/form'">
+					<input type="button" value="회원가입" onclick="location.href='<%= request.getContextPath()%>/sign/form'">
 				</div>
 				
 			</div>

@@ -50,54 +50,87 @@
 </head>
 <script>
 function doJoin(){
-	var form = document.getElementById("joinForm");
+	var userId = $("#USER_ID");
+	var userPw = $("#USER_PW");
+	var userPwAgain = $("#USER_PW_AGAIN");
+	var userNm = $("#USER_NM");
+	var email = $("#EMAIL");
 	
-	if(!form.USER_ID.value){
+	if(!userId.val()){
 		alert("아이디를 입력하여 주십시오");
-		form.USER_ID.focus();
+		userId.focus();
 		return;
-	}else if(!form.USER_NM.value){
+	}else if(!userNm.val()){
 		alert("이름을 입력하여 주십시오");
-		form.USER_NM.focus();
+		userNm.focus();
 		return;
-	}else if(!form.USER_PW.value){
+	}else if(!userPw.val()){
 		alert("비밀번호를 입력하여 주십시오");
-		form.USER_PW.focus();
+		userPw.focus();
 		return;
-	}else if(!form.USER_PW_AGAIN.value){
+	}else if(!userPwAgain.val()){
 		alert("비밀번호 확인란을 입력하여 주십시오");
-		form.USER_PW_AGAIN.focus();
+		userPwAgain.focus();
 		return;
-	}else  if(!form.EMAIL.value){
+	}else  if(!email.val()){
 		alert("이메일을 입력하여 주십시오");
-		form.EMAIL.focus();
+		email.focus();
 		return;
 	}else 
 		
-	if(form.USER_PW.value != form.USER_PW_AGAIN.value){
+	if(userPw.val() != userPwAgain.val()){
 		alert("비밀번호와 비밀번호 확인란이 일치하지 않습니다. 확인해주세요");
-		form.USER_PW.value = "";
-		form.USER_PW_AGAIN.value = "";
-		form.USER_PW.focus();
+		userPw.val() = "";
+		userPwAgain.val() = "";
+		userPw.focus();
 		return;
 	}
 	
 	//이메일 유효성 검사 정규식
 	var regExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
-	if(form.EMAIL.value.match(regExp) == null){
+	if(email.val().match(regExp) == null){
 		alert("올바르지 않은 이메일 형식입니다");
-		form.EMAIL.value = "";
-		form.EMAIL.focus();
+		email.val() = "";
+		email.focus();
 		return;
 	}
 	
-	form.submit();
+	var param = {
+		"USER_ID" : userId.val(),
+		"USER_PW" : userPw.val(),
+		"USER_NM" : userNm.val(),
+		"EMAIL" : email.val()
+	}
+		
+	$.ajax({
+		url:'<%= request.getContextPath()%>/sign/signup',
+		data: {'param' : JSON.stringify(param)},
+		type:'POST',
+		contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+		dataType:'json',
+		error:function(request,status,error){
+	    	alert("[error code] : "+ request.status + "\n\n[message] :\n\n " + request.responseText + "\n[error msg] :\n " + error); //에러상황
+	    },
+		success:function(data){
+			if(data['error']){
+				alert(data['error']);
+				return;
+			}
+			
+			if(data['success']){
+				alert(data['success']);
+			}
+			
+			location.href='<%= request.getContextPath()%>/sign/main'
+		}
+	});
 }
 
 </script>
 <script  src="http://code.jquery.com/jquery-latest.min.js"></script>
 <body>
-<form id="joinForm" action="../sign/signup" method="post" accept-charset="UTF-8">
+<!-- <form id="joinForm" action="../sign/signup" method="post" accept-charset="UTF-8"> -->
+<form id="joinForm" >
 	<div class="container">
 		<div class="outer">
 			<div class="inner">
@@ -108,23 +141,23 @@ function doJoin(){
 					<table>
 						<tr>
 							<th>아이디*</th>
-							<td><input type="text" name="USER_ID" size="8" placeholder=""></td>
+							<td><input type="text" id="USER_ID" name="USER_ID" size="8" placeholder=""></td>
 						</tr>
 						<tr>
 							<th>이름</th>
-							<td><input type="text" name="USER_NM" size="30" placeholder=""></td>
+							<td><input type="text" id="USER_NM" name="USER_NM" size="30" placeholder=""></td>
 						</tr>
 						<tr>
 							<th>비밀번호</th>
-							<td><input type="password" name="USER_PW" size="8" placeholder=""></td>		
+							<td><input type="password" id="USER_PW" name="USER_PW" size="8" placeholder=""></td>		
 						</tr>
 						<tr>
 							<th>비밀번호 확인</th>
-							<td><input type="password" name="USER_PW_AGAIN" size="8" placeholder=""></td>		
+							<td><input type="password" id="USER_PW_AGAIN" name="USER_PW_AGAIN" size="8" placeholder=""></td>		
 						</tr>
 						<tr>
 							<th>이메일</th>
-							<td><input type="text" name="EMAIL" size="30" placeholder=""></td>
+							<td><input type="text" id="EMAIL" name="EMAIL" size="30" placeholder=""></td>
 						</tr>
 					</table>
 				</div>

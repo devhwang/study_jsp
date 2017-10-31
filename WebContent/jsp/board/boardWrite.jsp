@@ -34,18 +34,47 @@
 </style>
 <script>
 	function fn_submit(){
-			
-		if($("#TITLE").val()==""){
+		
+		var title = $("#TITLE");
+		var contents = $("#CONTENTS");
+		
+		if(title.val()==""){
 			alert("제목을 입력하여 주십시오");
-			$("#TITLE").focus();
+			title.focus();
 			return;
-		}else if($("#CONTENTS").val()==""){
+		}else if(contents.val()==""){
 			alert("내용을 입력하여 주십시오");
-			$("#CONTENTS").focus();
+			contents.focus();
 			return;
 		}
 		
-		$("#boardWriteForm").submit();
+		var param = {
+			"TITLE" : title.val(),
+			"CONTENTS" : contents.val()
+		}
+	
+		$.ajax({
+			url:'<%= request.getContextPath()%>/board/write',
+			data: {'param' : JSON.stringify(param)},
+			type:'POST',
+			contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+			dataType:'json',
+			error:function(request,status,error){
+		    	alert("[error code] : "+ request.status + "\n\n[message] :\n\n " + request.responseText + "\n[error msg] :\n " + error); //에러상황
+		    },
+			success:function(data){
+				if(data['error']){
+					alert(data['error']);
+					return;
+				}
+				
+				if(data['success']){
+					alert(data['success']);
+				}
+				
+				location.href='<%= request.getContextPath()%>/board/main'
+			}
+		});
 	}
 	
 </script>
@@ -58,7 +87,7 @@
     <div class="inner">
    		<div class="centered">
 	   		<div class="title">◎  게시판 입력</div>
-			<form id="boardWriteForm"action="../board/write" method="post" accept-charset="UTF-8">
+			<form id="boardWriteForm">
 		   		<table id="view">
 					<tr>
 						<th style="width: 30%">제목</th>
@@ -67,7 +96,7 @@
 					<tr>
 						<th>내용</th>
 						<td style="width: 70%">
-							<textarea id="CONTENT"  name="CONTENTS" rows="" cols="" style="width:99%; height:200px;"></textarea> 
+							<textarea id="CONTENTS" name="CONTENTS" rows="" cols="" style="width:99%; height:200px;"></textarea> 
 						</td>
 					</tr>
 				</table>
