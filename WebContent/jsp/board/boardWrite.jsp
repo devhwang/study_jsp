@@ -51,7 +51,6 @@
 		var param = {
 			"TITLE" : title.val(),
 			"CONTENTS" : contents.val()
-			"REG_ID" : 
 		}
 	
 		$.ajax({
@@ -92,7 +91,7 @@
 		   		<table id="view">
 					<tr>
 						<th style="width: 30%">제목</th>
-						<td><input type="text" id="TITLE" name="TITLE" style="width:99%;"></td>
+						<td><input type="text" id="TITLE" name="TITLE" style="width:99%;" autofocus="autofocus"></td>
 					</tr>
 					<tr>
 						<th>내용</th>

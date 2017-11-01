@@ -10,6 +10,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import co.kr.ucs.controller.BoardController;
+
 /**
  * 다중접속 환경 단위 테스트용 클래스
  * @author Kiha
@@ -18,21 +23,24 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 public class DBConnectionTest {
 
+	private static final Logger logger = LoggerFactory.getLogger(BoardController.class);
+	
 	ArrayBlockingQueue<ThreadA> queue = new ArrayBlockingQueue<DBConnectionTest.ThreadA>(1000);
 
 	DBConnectionPoolManager dbPoolManager = DBConnectionPoolManager.getInstance();
 	DBConnectionPool dbPool;
-	
+
 	public DBConnectionTest() throws Exception {
 
 		//dbPoolManager.setDBPool(DBManager.getUrl(), DBManager.getId(), DBManager.getPw());//PoolName 미지정
-		dbPoolManager.setDBPool("poolNameTest",DBManager.getUrl(), DBManager.getId(), DBManager.getPw(),1,20);
+		dbPoolManager.setDBPool("poolNameTest",DBManager.getUrl(), DBManager.getId(), DBManager.getPw(),1,10);
 		dbPool = dbPoolManager.getDBPool("poolNameTest");
-		
 		for(int i = 0; i < 1000; i++) {
 			try{
+				
 				queue.offer(new ThreadA(dbPool));
 				go();
+				
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -54,7 +62,7 @@ public class DBConnectionTest {
 	
 	class ThreadA extends Thread{	
 		DBConnectionPool dbPool;
-		
+				
 		public ThreadA(DBConnectionPool cp) {
 			this.dbPool = cp;
 		}
@@ -67,17 +75,14 @@ public class DBConnectionTest {
 				e.printStackTrace();
 			}
 			
-			if(conn == null) System.out.println("커넥션 NULL");
-			
 			PreparedStatement pstmt = null;
 			ResultSet rs = null;
-			
+
 			try{
-				pstmt = conn.prepareStatement("SELECT 'CONNECTED' K FROM DUAL");
+				pstmt = conn.prepareStatement("SELECT 'TEST' AS TEST FROM DUAL");
 				rs = pstmt.executeQuery();
 				rs.next();
 				
-				//System.out.println(MessageFormat.format("{0} : 결과 {1}", new Object[]{conn.toString(), rs.getString("K")}));
 			} catch (Exception e){
 				e.printStackTrace();				
 			}finally{
@@ -86,5 +91,9 @@ public class DBConnectionTest {
 			}	
 		}
 	}
+	
+
+	
+	
 	
 }

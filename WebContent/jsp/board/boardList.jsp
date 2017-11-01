@@ -2,15 +2,19 @@
     pageEncoding="UTF-8"%>
 <%@page import="java.io.*, java.sql.*, java.util.*"%>
 <%
+	String path = request.getContextPath();
+
 	ArrayList<HashMap<String,String>> list = (ArrayList)request.getAttribute("list");
 	HashMap<String ,String> search = (HashMap)request.getAttribute("searchInfo");
-	int BLOCKSIZE = Integer.parseInt(search.get("BLOCKSIZE"));
+	
+	int BLOCKSIZE = Integer.parseInt(search.get("BLOCKSIZE")); 
 	int ROWSIZE = Integer.parseInt(search.get("ROWSIZE"));
-	int nowPage = Integer.parseInt(search.get("nowPage"));
 	int nowBlock = Integer.parseInt(search.get("nowBlock"));
+	int nowPage = Integer.parseInt(search.get("nowPage"));
 	int totcnt = Integer.parseInt(search.get("totcnt"));
-	String type = search.get("type");
-	String keyword = search.get("keyword");
+	
+	String type = search.get("type");//검색 타입(제목or작성자)
+	String keyword = search.get("keyword");//검색 키워드
 %>
 <!DOCTYPE html>
 <html>
@@ -21,15 +25,15 @@
 		var type = document.getElementById("S_TYPE").value;
 		var keyword = document.getElementById("S_KEYWORD").value;
 		
-		location.href="../board/main?block=1&page=1&type="+type+"&keyword="+keyword;
+		location.href="<%=path %>/board/main?block=1&page=1&type="+type+"&keyword="+keyword;
 	}
 	function fn_write(){
-		location.href="../board/form";
+		location.href="<%=path %>/board/form";
 	}
 </script>
 <meta charset="UTF-8">
 <title>게시판 메인</title>
-<link rel="stylesheet" href="<%= request.getContextPath() %>/css/common.css" type="text/css">
+<link rel="stylesheet" href="<%=path %>/css/common.css" type="text/css">
 <style type="text/css">
 		
 	#listview {
@@ -100,7 +104,7 @@
 					</select>
 				</td>
 				<td>
-					<input type="text" id="S_KEYWORD" value="<%= "".equals(keyword) || keyword != null ? keyword : "" %>">
+					<input type="text" id="S_KEYWORD" value="<%= "".equals(keyword) || keyword != null ? keyword : "" %>" onKeydown="javascript:if(event.keyCode == 13) fn_search();" autofocus="autofocus">
 				</td>
 				<td>
 					<input type="button" value='검색' onclick="fn_search()">
@@ -129,7 +133,7 @@
 	%>
 				<tr>
 					<td><%= list.get(i).get("SEQ") %></td>
-					<td><a href="../board/read?seq=<%= list.get(i).get("SEQ")%>"><%= list.get(i).get("TITLE")%></a></td>
+					<td><a href="<%=path %>/board/read?seq=<%= list.get(i).get("SEQ")%>"><%= list.get(i).get("TITLE")%></a></td>
 					<td><%= list.get(i).get("REG_NM")%></td>
 					<td><%= list.get(i).get("REG_DATE")%></td>
 				</tr>
@@ -151,21 +155,21 @@
 				int pg = i/ROWSIZE;//대상이 되는 페이지
 				if(i == startRow && nowBlock!=1){//문서 시작시 이전 페이지 이동버튼설정 (1페이지는 설정안함)
 		%>
-					<li><input type="button" value="&lt;&lt;" onclick='location.href="../board/main?block=1&page=1&type=<%=type%>&keyword=<%=keyword%>"'></li>
-					<li><input type="button" value="&lt;" onclick='location.href="../board/main?block=<%=nowBlock-1%>&page=<%=pg%>&type=<%=type%>&keyword=<%=keyword%>"'></li>
+					<li><input type="button" value="&lt;&lt;" onclick='location.href="<%=path %>/board/main?block=1&page=1&type=<%=type%>&keyword=<%=keyword%>"'></li>
+					<li><input type="button" value="&lt;" onclick='location.href="<%=path %>/board/main?block=<%=nowBlock-1%>&page=<%=pg%>&type=<%=type%>&keyword=<%=keyword%>"'></li>
 		<%		
-				}else if(pgBtn == 0 && pg == nowPage){//현재 페이지 일경우 페이지버튼 링크X
+				}else if(i%ROWSIZE == 0 && i/ROWSIZE == nowPage){//현재 페이지 일경우 페이지버튼 링크X
 		%>
 					<li><b><%= pg %></b></li>
 		<%		
-				}else if(pgBtn == 0){ //0으로 나누어 떨어질경우 페이지로 분류
+				}else if(i%ROWSIZE == 0){ //0으로 나누어 떨어질경우 페이지로 분류
 		%>
-					<li><a href="../board/main?block=<%=nowBlock%>&page=<%=pg%>&type=<%=type%>&keyword=<%=keyword%>"><%= pg %></a></li>
+					<li><a href="<%=path %>/board/main?block=<%=nowBlock%>&page=<%=pg%>&type=<%=type%>&keyword=<%=keyword%>"><%= pg %></a></li>
 		<%
-				}else if(pg >= (BLOCKSIZE*nowBlock)){//정해진 페이지 이상을 넘어설경우 다음으로 처리	
+				}else if(i/ROWSIZE >= (BLOCKSIZE*nowBlock)){//정해진 페이지 이상을 넘어설경우 다음으로 처리	
 		%>
-					<li><input type="button" value="&gt;" onclick='location.href="../board/main?block=<%=nowBlock+1%>&page=<%=pg+1%>&type=<%=type%>&keyword=<%=keyword%>"'></li>
-					<li><input type="button" value="&gt;&gt;" onclick='location.href="../board/main?block=<%=lastBlock%>&page=<%=lastPage%>&type=<%=type%>&keyword=<%=keyword%>"'></li>
+					<li><input type="button" value="&gt;" onclick='location.href="<%=path %>/board/main?block=<%=nowBlock+1%>&page=<%=pg+1%>&type=<%=type%>&keyword=<%=keyword%>"'></li>
+					<li><input type="button" value="&gt;&gt;" onclick='location.href="<%=path %>/board/main?block=<%=lastBlock%>&page=<%=lastPage%>&type=<%=type%>&keyword=<%=keyword%>"'></li>
 		<%
 				break;
 				}

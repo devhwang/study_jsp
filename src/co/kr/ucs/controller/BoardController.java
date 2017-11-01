@@ -11,8 +11,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,50 +51,49 @@ public class BoardController extends HttpServlet{
 		BoardService board = new BoardService();
 
 		//요청분석
-		String[] uri = request.getRequestURI().split("/");
-		String process = uri[uri.length-1];
+		String[] uri = request.getRequestURI().split("/");//e.g)  */board/write/ ==> [*][board][write]
+		String process = uri[uri.length-1];//e.g) process = write;
 		
 		String path = request.getContextPath();
 		String msg = "";//사용자에게 출력할 메시지
 		Boolean isSuccess = false; //성공여부
-		String param = request.getParameter("param");//파라미터(json형식)		
-		JSONObject jsonObj =null;
-		
-		//게시판 정보
-		Map brdInfo = new HashMap();
-		//검색정보
-		Map searchInfo = new HashMap();
+		Map searchInfo = new HashMap();//페이징 정보
+		Map brdInfo = new HashMap();//게시물 정보
+
+		String param = request.getParameter("param");//json 파라미터 분석		
+		JsonElement jsonObj =null;
 		
 		if(param != null){
-			JSONParser parser = new JSONParser();
-			jsonObj = (JSONObject)parser.parse(param);
+			JsonParser parser = new JsonParser();
+			jsonObj = (JsonElement)parser.parse(param);
 		}
-		
-		
+	    
 		// 기능수행
 		if(process.equals("main")) {//리스트조회
 			
-			/*searchInfo.put("block", jsonObj.get("block").toString());
-			searchInfo.put("page", jsonObj.get("page").toString());
-			searchInfo.put("type", jsonObj.get("type").toString());
-			searchInfo.put("keyword", jsonObj.get("keyword").toString());
-			*///널체크후 다시사용하기전 페이징안됨.
-			request.setAttribute("list", board.getlist(searchInfo));
+			searchInfo.put("block", request.getParameter("block"));
+			searchInfo.put("page", request.getParameter("page"));
+			searchInfo.put("type", request.getParameter("type"));
+			searchInfo.put("keyword", request.getParameter("keyword"));
+			
+			request.setAttribute("list", board.getlist(searchInfo)); 
 			request.setAttribute("searchInfo", searchInfo);
+			
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/jsp/board/boardList.jsp");
 			dispatcher.forward(request, response);		
 			
-		}else if(process.equals("form")) {//글 작성폼
+		}else if(process.equals("form")) {//글 작성폼으로 이동
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/jsp/board/boardWrite.jsp");
 			dispatcher.forward(request, response);	
 			
-		}else if(process.equals("read")) {//글 읽기
+		}else if(process.equals("read")) {//글 상세로 이동
+			request.setAttribute("brdInfo", board.getDetailView(request.getParameter("seq")));
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/jsp/board/boardRead.jsp");
 			dispatcher.forward(request, response);	
 			
-		}else if(process.equals("write")) {//글 쓰기
-			brdInfo.put("TITLE", jsonObj.get("TITLE").toString());
-			brdInfo.put("CONTENTS", jsonObj.get("CONTENTS").toString());
+		}else if(process.equals("write")) {//글 쓰기로 이동
+			brdInfo.put("TITLE", jsonObj.getAsJsonObject().get("TITLE").getAsString());
+			brdInfo.put("CONTENTS", jsonObj.getAsJsonObject().get("CONTENTS").getAsString());
 			brdInfo.put("REG_ID", request.getSession().getAttribute("USER_ID"));
 			
 			if(board.doWrite(brdInfo)){
@@ -101,19 +102,20 @@ public class BoardController extends HttpServlet{
 			}else{
 				msg = "등록에 실패하였습니다. 다시 시도해주세요";
 			}
+			
 		}else{
 			msg ="잘못된 접근입니다.";		
 		}
 		
-		JSONObject result = new JSONObject();		
+		Map result = new HashMap();		
 		if(isSuccess == false) {
 			result.put("error", msg);
 		}else {
 			result.put("success", msg);
 		}
-		
+		Gson gson = new Gson();
 		response.setContentType("text/html;charset=UTF-8");
-		response.getWriter().write(result.toJSONString());
+		response.getWriter().write(gson.toJson(result));
 		
 						
 	}

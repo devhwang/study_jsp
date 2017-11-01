@@ -5,10 +5,17 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import co.kr.ucs.controller.BoardController;
+
 public class DBConnectionPool {
 
+	private static final Logger logger = LoggerFactory.getLogger(BoardController.class);
+	
 	private int initConns, maxConns;
-	private long timeOut = 1000 * 30;// timeout 기본은 30초이고 setTimeOut 메서드를 통해 직접 지정해 줄 수 있다.
+	private long timeOut = 1000 * 1;// timeout 기본은 30초이고 setTimeOut 메서드를 통해 직접 지정해 줄 수 있다.
 	
 	private String url, id, pw;
 	
@@ -50,33 +57,51 @@ public class DBConnectionPool {
 
 	public synchronized Connection getConnection() throws SQLTimeoutException, InterruptedException{
 		
+		//커넥션풀 테스트
+		String temp;
+		StringBuffer status = new StringBuffer();
+		status.append("[");
+		for(int j = 0 ; j < connPool.length; j++) {
+			if(this.connStatus[j]==null) {temp = "";} else if(this.connStatus[j]==false) { temp= "□";} else {temp= "■";}
+			status.append(temp);
+		}
+		status.append("]");
+		logger.info(status.toString());
+		
 		long currTime = System.currentTimeMillis();
-		while((System.currentTimeMillis() - currTime) <= this.timeOut) {//대기가 30*1000 밀리초(30초) 이상되면 timeout으로 exception을 발생시킴
+		int retryCnt = 0;
+		
+		do {
 			for(int i=0; i<this.maxConns; i++) {
 								
 				if(this.connStatus[i] != null && this.connStatus[i] == false) {//사용가능이면
-					System.out.println("false일경우 탄다");
 					this.connStatus[i] = true;//사용중으로바꾸고
-					//System.out.println(i+"번째 커넥션 연결");
-					return this.connPool[i];//해당 인덱스번쨰의 커넥션 객체를 반환
+					return this.connPool[i];//해당 인덱스번째의 커넥션 객체를 반환
 				}else if(this.connStatus[i] == null) {//0이라면
-					System.out.println("0일경우 탄다");
 					try {
 						this.connStatus[i] = true;
 						return createConnection(i);//신규 커넥션 생성시도
 						
 					} catch (ClassNotFoundException | SQLException e) {
 						e.printStackTrace();
-						System.out.println("새로운 Connection 생성 실패");
+						logger.error("Connection 생성 실패");
 					}
-				}
+				}				
 			}			
 			
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			//성고
+			if(retryCnt < 1) {
+				currTime = System.currentTimeMillis();
+				retryCnt++;
+				logger.info("retry");
 			}
+			
+		}while(((System.currentTimeMillis() - currTime) <= this.timeOut));//대기가 1000*1 1초 이상되면 timeout
+
+		try {			
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 		
 		throw new SQLTimeoutException("모든 Connection이 사용중입니다.");
@@ -86,20 +111,8 @@ public class DBConnectionPool {
 				
 		if(conn != null) {
 			for(int i=0; i<this.maxConns; i++) {
-				if(this.connPool[i] == conn) {		
-
-					this.connStatus[i] = false;
-					
-					String temp;
-					String temp2;
-					System.out.print("["+i+"반환후:");
-					for(int j = 0 ; j < connPool.length; j++) {
-						if(this.connPool[j]==null) {temp2 = "_";} else {temp2= "CONN";}
-						if(this.connStatus[j]==null) {temp = "_";} else if(this.connStatus[j]==false) { temp= "false";} else {temp= "true";}
-						System.out.print(temp2+":"+temp+",");
-					}
-					System.out.println("]");
-					
+				if(this.connPool[i] == conn) {												
+					this.connStatus[i] = false;//커넥션 사용가능상태로 만듦
 					return "연결 종료 성공";
 					//break;
 				}
@@ -115,5 +128,6 @@ public class DBConnectionPool {
 	public void setTimeOut(long timeOut){
 		this.timeOut = timeOut;
 	}
+	
 
 }

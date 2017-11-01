@@ -35,16 +35,18 @@ public class BoardService {
 			
 		//--페이징처리 관련 변수
 		final int BLOCKSIZE = 10, ROWSIZE = 10; //group당 몇개의 page를 표현할 것인가//page당 몇개의 row를 표현할 것인가
-		int totcnt = 0;//resultSet 순회시 대입됨
+		int totcnt = 0;//resultSet 순회시 대입됨, 질의 결과 총 반환되는 row의 갯수
 		
 		int nowBlock = Integer.parseInt((String)searchInfo.get("block")==null?"1":(String)searchInfo.get("block")); //네비게이터; 현재 어떤 그룹을 보고있는가
+		//null이면 1블럭
 		int nowPage = Integer.parseInt((String)searchInfo.get("page")==null?"1":(String)searchInfo.get("page")); //네비게이터; 현재 어떤 페이지를 보고있는가
-		 		
+		//null이면 1페이지
+		
 		int minRowNum = ROWSIZE * (nowPage-1);//페이지 네비게이터 최소페이지
 		int maxRowNum = ROWSIZE * (nowPage);//페이지 네비게이터 최대 페이지
 
-		String type = "";
-		String keyword = "";
+		String type = "";//검색 타입
+		String keyword = "";//검색 키워드
 		
 		ArrayList<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
 				
@@ -76,9 +78,8 @@ public class BoardService {
 						  +  searchCondition
 						  +" ORDER BY SEQ DESC)C)"
 			+" WHERE RNUM > ? AND RNUM <=?";
-
 			
-			logger.info("쿼리 : {}", query);
+			logger.info("query : {}", query);
 
 			pstmt = conn.prepareStatement(query);
 			pstmt.setInt(1, minRowNum);
@@ -87,29 +88,26 @@ public class BoardService {
 			rs = pstmt.executeQuery();
 			Map brdInfo;
 			while(rs.next()){
-				//System.out.println("==="+rs.getRow() +"===");
 				if(rs.isFirst()){
 					totcnt = rs.getInt("TOTCNT");
 				}
 				brdInfo = new HashMap();
 				
-				brdInfo.put("SEQ",rs.getString("SEQ"));// System.out.print(brdInfo.get("SEQ"));
-				brdInfo.put("TITLE",rs.getString("TITLE"));//System.out.print(brdInfo.get("TITLE"));
- 				brdInfo.put("CONTENTS",rs.getString("CONTENTS"));//System.out.print(brdInfo.get("CONTENTS"));
-				brdInfo.put("REG_ID",rs.getString("REG_ID"));//System.out.print(brdInfo.get("REG_ID"));
-				brdInfo.put("REG_NM",rs.getString("REG_NM"));//System.out.print(brdInfo.get("REG_NM"));
-				brdInfo.put("REG_DATE",rs.getString("REG_DATE"));//System.out.print(brdInfo.get("REG_DATE"));
-				brdInfo.put("MOD_DATE",rs.getString("MOD_DATE"));//System.out.println(brdInfo.get("MOD_DATE"));
+				brdInfo.put("SEQ",rs.getString("SEQ"));
+				brdInfo.put("TITLE",rs.getString("TITLE"));
+ 				brdInfo.put("CONTENTS",rs.getString("CONTENTS"));
+				brdInfo.put("REG_ID",rs.getString("REG_ID"));
+				brdInfo.put("REG_NM",rs.getString("REG_NM"));
+				brdInfo.put("REG_DATE",rs.getString("REG_DATE"));
+				brdInfo.put("MOD_DATE",rs.getString("MOD_DATE"));
 				
 				list.add((HashMap<String, String>) brdInfo);
-				//System.out.println(list);
 			}
 			
 		}catch(Exception e){
 			e.printStackTrace();
 			logger.error("에러 : {}", e.getMessage());
 		}finally{
-			//logger.info("DB 연결종료");
 			logger.info(dbPool.freeConnection(conn));
 			DBManager.close(rs, pstmt);
 		}
@@ -125,8 +123,45 @@ public class BoardService {
 		return list;		
 	}
 	
+	public Map getDetailView(String seq) throws Exception {
+		Connection conn = dbPool.getConnection(); 
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		HashMap<String, String> brdInfo = new HashMap<String, String>();
+		
+		try{	
+
+			String query = 
+					" SELECT A.SEQ, A.TITLE, A.CONTENTS, A.REG_ID, TO_CHAR(A.REG_DATE,'yyyy-mm-dd') REG_DATE, A.MOD_DATE, B.USER_NM AS REG_NM"
+				   +" FROM BOARD A, CM_USER B"
+				   +" WHERE A.REG_ID = B.USER_ID"
+				   +" AND SEQ = ?";
+
+			pstmt = conn.prepareStatement(query);
+			pstmt.setString(1, seq);
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()){
+				brdInfo.put("SEQ",rs.getString("SEQ"));
+				brdInfo.put("TITLE",rs.getString("TITLE"));
+				brdInfo.put("CONTENTS",rs.getString("CONTENTS"));
+				brdInfo.put("REG_ID",rs.getString("REG_ID"));
+				brdInfo.put("REG_NM",rs.getString("REG_NM"));
+				brdInfo.put("REG_DATE",rs.getString("REG_DATE"));
+				brdInfo.put("MOD_DATE",rs.getString("MOD_DATE"));
+			}
+			
+		} catch (Exception e){
+				e.printStackTrace();
+		}finally{
+			dbPool.freeConnection(conn);
+			DBManager.close(rs, pstmt);
+		}
+		return brdInfo;	
+	}
 	
-	@SuppressWarnings({"rawtypes", "unchecked"})
 	public boolean doWrite(Map brdInfo) throws Exception {
 		Connection conn = dbPool.getConnection(); 
 		PreparedStatement pstmt = null;

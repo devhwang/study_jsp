@@ -2,44 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@page import="java.io.*, java.sql.*, java.util.*"%>
 <%
-	Connection conn = null;
-	PreparedStatement pstmt = null;
-	ResultSet rs = null;
-	
-	HashMap<String, String> brdInfo = new HashMap<String, String>();
-	
-	try{	
-		Class.forName("oracle.jdbc.driver.OracleDriver");
-		conn = DriverManager.getConnection("jdbc:oracle:thin:@220.76.203.39:1521:UCS", "UCS_STUDY", "qazxsw");
-		
-		String query = 
-				" SELECT A.SEQ, A.TITLE, A.CONTENTS, A.REG_ID, TO_CHAR(A.REG_DATE,'yyyy-mm-dd') REG_DATE, A.MOD_DATE, B.USER_NM AS REG_NM"
-			   +" FROM BOARD A, CM_USER B"
-			   +" WHERE A.REG_ID = B.USER_ID"
-			   +" AND SEQ = ?";
-		
-		pstmt = conn.prepareStatement(query);
-		pstmt.setString(1, request.getParameter("seq"));
-		
-		rs = pstmt.executeQuery();
-		
-		if(rs.next()){
-			brdInfo.put("SEQ",rs.getString("SEQ"));
-			brdInfo.put("TITLE",rs.getString("TITLE"));
-			brdInfo.put("CONTENTS",rs.getString("CONTENTS"));
-			brdInfo.put("REG_ID",rs.getString("REG_ID"));
-			brdInfo.put("REG_NM",rs.getString("REG_NM"));
-			brdInfo.put("REG_DATE",rs.getString("REG_DATE"));
-			brdInfo.put("MOD_DATE",rs.getString("MOD_DATE"));
-		}
-		
-	}catch(Exception e){
-		e.printStackTrace();
-	}finally{
-		if (rs != null) try { rs.close(); } catch(SQLException ex) {ex.getStackTrace();}
-        if (pstmt != null) try { pstmt.close(); } catch(SQLException ex) {ex.getStackTrace();}
-        if (conn != null) try { conn.close(); } catch(SQLException ex) {ex.getStackTrace();}
-	}
+	HashMap<String, String> brdInfo = (HashMap)request.getAttribute("brdInfo");
 %>
 <!DOCTYPE html>
 <html>
