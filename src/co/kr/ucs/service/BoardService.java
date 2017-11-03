@@ -42,8 +42,9 @@ public class BoardService {
 		int nowPage = Integer.parseInt((String)searchInfo.get("page")==null?"1":(String)searchInfo.get("page")); //네비게이터; 현재 어떤 페이지를 보고있는가
 		//null이면 1페이지
 		
-		int minRowNum = ROWSIZE * (nowPage-1);//페이지 네비게이터 최소페이지
 		int maxRowNum = ROWSIZE * (nowPage);//페이지 네비게이터 최대 페이지
+		int minRowNum = ROWSIZE * (nowPage-1)+1;//페이지 네비게이터 최소페이지
+		
 
 		String type = "";//검색 타입
 		String keyword = "";//검색 키워드
@@ -51,22 +52,8 @@ public class BoardService {
 		ArrayList<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
 				
 		try{	
-			type = (String) searchInfo.get("type");
-			keyword = (String) searchInfo.get("keyword");
 			
-			String searchCondition = "";
-			
-			if((type != null || "".equals(type)) && (keyword != null || "".equals(keyword))){
-				if("title".equals(type)){
-					searchCondition = " AND A.TITLE LIKE '%"+keyword+"%'";
-				}else if("name".equals(type)){
-					searchCondition = " AND B.USER_NM LIKE '%"+keyword+"%'";
-				}
-			}else{
-				type = "";
-				keyword = "";
-			}
-			
+			/*
 			String query = 		
 			  "SELECT *"
 			+" FROM" 
@@ -78,13 +65,49 @@ public class BoardService {
 						  +  searchCondition
 						  +" ORDER BY SEQ DESC)C)"
 			+" WHERE RNUM > ? AND RNUM <=?";
+			*/
+			/* 기존 쿼리의 문제점
+			 * String의 + 연산은 임시 중간 객체를 생성하기 때문에 메모리 소모가 많고 느리다? (+= 일 경우에만...)
+			 * COUNT(*) OVER()로 인해 풀 스캔을 수행한다고 한다. -> 따로 TOTCNT를 구하는 쿼리 작동하도록
+			 * WHERE RNUM > ? AND RUNM <= 구간이 비효율적이라고 한다. -> 인라인뷰 2개로 활용 
+			 */
+			StringBuffer query = new StringBuffer();
+			
+			query.append("	SELECT (SELECT COUNT(*) FROM BOARD) AS TOTCNT, Y.RNUM, Y.SEQ, Y.TITLE, Y.CONTENTS, Y.REG_ID, TO_CHAR(Y.REG_DATE,'yyyy-mm-dd') AS REG_DATE, Y.MOD_ID, Y.MOD_DATE, Y.REG_NM");
+			query.append(" 	FROM("); 
+			query.append(" 		SELECT ROWNUM AS RNUM, X.SEQ, X.TITLE, X.CONTENTS, X.REG_ID, X.REG_DATE, X.MOD_ID, X.MOD_DATE, REG_NM"); 
+			query.append(" 		FROM(");
+			query.append(" 				SELECT B.SEQ, B.TITLE, B.CONTENTS, B.REG_ID, B.REG_DATE, B.MOD_ID, B.MOD_DATE, U.USER_NM AS REG_NM");
+			query.append(" 				FROM BOARD B, CM_USER U");
+			query.append(" 				WHERE B.REG_ID = U.USER_ID");
+			
+			type = (String) searchInfo.get("type");
+			keyword = (String) searchInfo.get("keyword");
+			
+			String searchCondition = "";
+			
+			if((type != null || "".equals(type)) && (keyword != null || "".equals(keyword))){
+				if("title".equals(type)){
+					searchCondition = " AND B.TITLE LIKE '%"+keyword+"%'";
+				}else if("name".equals(type)){
+					searchCondition = " AND U.USER_NM LIKE '%"+keyword+"%'";
+				}
+			}else{
+				type = "";
+				keyword = "";
+			}
+						
+			query.append(				searchCondition);
+			query.append(" 				ORDER BY SEQ DESC)X");
+			query.append(" 		WHERE ROWNUM <= ? )Y");
+			query.append(" 	WHERE Y.RNUM >=?");
 			
 			logger.info("query : {}", query);
 
-			pstmt = conn.prepareStatement(query);
-			pstmt.setInt(1, minRowNum);
-			pstmt.setInt(2, maxRowNum);
-			
+			pstmt = conn.prepareStatement(query.toString());
+			pstmt.setInt(1, maxRowNum);
+			pstmt.setInt(2, minRowNum);
+						
 			rs = pstmt.executeQuery();
 			Map brdInfo;
 			while(rs.next()){
@@ -132,13 +155,14 @@ public class BoardService {
 		
 		try{	
 
-			String query = 
-					" SELECT A.SEQ, A.TITLE, A.CONTENTS, A.REG_ID, TO_CHAR(A.REG_DATE,'yyyy-mm-dd') REG_DATE, A.MOD_DATE, B.USER_NM AS REG_NM"
-				   +" FROM BOARD A, CM_USER B"
-				   +" WHERE A.REG_ID = B.USER_ID"
-				   +" AND SEQ = ?";
+			StringBuffer query = new StringBuffer(); 
+			
+			query.append(" SELECT A.SEQ, A.TITLE, A.CONTENTS, A.REG_ID, TO_CHAR(A.REG_DATE,'yyyy-mm-dd') REG_DATE, A.MOD_DATE, B.USER_NM AS REG_NM");
+			query.append(" FROM BOARD A, CM_USER B");
+			query.append(" WHERE A.REG_ID = B.USER_ID");
+			query.append(" AND SEQ = ?");
 
-			pstmt = conn.prepareStatement(query);
+			pstmt = conn.prepareStatement(query.toString());
 			pstmt.setString(1, seq);
 			
 			rs = pstmt.executeQuery();
