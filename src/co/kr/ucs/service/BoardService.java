@@ -71,16 +71,7 @@ public class BoardService {
 			 * COUNT(*) OVER()로 인해 풀 스캔을 수행한다고 한다. -> 따로 TOTCNT를 구하는 쿼리 작동하도록
 			 * WHERE RNUM > ? AND RUNM <= 구간이 비효율적이라고 한다. -> 인라인뷰 2개로 활용 
 			 */
-			StringBuffer query = new StringBuffer();
-			
-			query.append("	SELECT (SELECT COUNT(*) FROM BOARD) AS TOTCNT, Y.RNUM, Y.SEQ, Y.TITLE, Y.CONTENTS, Y.REG_ID, TO_CHAR(Y.REG_DATE,'yyyy-mm-dd') AS REG_DATE, Y.MOD_ID, Y.MOD_DATE, Y.REG_NM");
-			query.append(" 	FROM("); 
-			query.append(" 		SELECT ROWNUM AS RNUM, X.SEQ, X.TITLE, X.CONTENTS, X.REG_ID, X.REG_DATE, X.MOD_ID, X.MOD_DATE, REG_NM"); 
-			query.append(" 		FROM(");
-			query.append(" 				SELECT B.SEQ, B.TITLE, B.CONTENTS, B.REG_ID, B.REG_DATE, B.MOD_ID, B.MOD_DATE, U.USER_NM AS REG_NM");
-			query.append(" 				FROM BOARD B, CM_USER U");
-			query.append(" 				WHERE B.REG_ID = U.USER_ID");
-			
+
 			type = (String) searchInfo.get("type");
 			keyword = (String) searchInfo.get("keyword");
 			
@@ -96,7 +87,16 @@ public class BoardService {
 				type = "";
 				keyword = "";
 			}
-						
+			
+			StringBuffer query = new StringBuffer();
+			
+			query.append("	SELECT (SELECT COUNT(*) FROM BOARD) AS TOTCNT, Y.RNUM, Y.SEQ, Y.TITLE, Y.CONTENTS, Y.REG_ID, TO_CHAR(Y.REG_DATE,'yyyy-mm-dd') AS REG_DATE, Y.MOD_ID, Y.MOD_DATE, Y.REG_NM");
+			query.append(" 	FROM("); 
+			query.append(" 		SELECT ROWNUM AS RNUM, X.SEQ, X.TITLE, X.CONTENTS, X.REG_ID, X.REG_DATE, X.MOD_ID, X.MOD_DATE, REG_NM"); 
+			query.append(" 		FROM(");
+			query.append(" 				SELECT B.SEQ, B.TITLE, B.CONTENTS, B.REG_ID, B.REG_DATE, B.MOD_ID, B.MOD_DATE, U.USER_NM AS REG_NM");
+			query.append(" 				FROM BOARD B, CM_USER U");
+			query.append(" 				WHERE B.REG_ID = U.USER_ID");
 			query.append(				searchCondition);
 			query.append(" 				ORDER BY SEQ DESC)X");
 			query.append(" 		WHERE ROWNUM <= ? )Y");

@@ -49,6 +49,7 @@ public class BoardController extends HttpServlet{
 		response.setContentType("text/html; charset=UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		BoardService board = new BoardService();
+		Map result = new HashMap();	//반환할 결과
 
 		//요청분석
 		String[] uri = request.getRequestURI().split("/");//e.g)  */board/write/ ==> [*][board][write]
@@ -71,17 +72,21 @@ public class BoardController extends HttpServlet{
 		// 기능수행
 		if(process.equals("main")) {//리스트조회
 			
-			searchInfo.put("block", request.getParameter("block"));
-			searchInfo.put("page", request.getParameter("page"));
-			searchInfo.put("type", request.getParameter("type"));
-			searchInfo.put("keyword", request.getParameter("keyword"));
-			
-			request.setAttribute("list", board.getlist(searchInfo)); 
-			request.setAttribute("searchInfo", searchInfo);
-			
+			//단순 페이지 이동만
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/jsp/board/boardList.jsp");
 			dispatcher.forward(request, response);		
 			
+		}else if(process.equals("list")){
+
+			searchInfo.put("block", jsonObj.getAsJsonObject().get("block").getAsString());
+			searchInfo.put("page", jsonObj.getAsJsonObject().get("page").getAsString());
+			searchInfo.put("type", jsonObj.getAsJsonObject().get("type").getAsString());
+			searchInfo.put("keyword", jsonObj.getAsJsonObject().get("keyword").getAsString());
+			
+			result.put("list", board.getlist(searchInfo));
+			result.put("searchInfo", searchInfo);
+			
+		
 		}else if(process.equals("form")) {//글 작성폼으로 이동
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/jsp/board/boardWrite.jsp");
 			dispatcher.forward(request, response);	
@@ -107,7 +112,6 @@ public class BoardController extends HttpServlet{
 			msg ="잘못된 접근입니다.";		
 		}
 		
-		Map result = new HashMap();		
 		if(isSuccess == false) {
 			result.put("error", msg);
 		}else {

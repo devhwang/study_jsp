@@ -4,7 +4,7 @@
 <%
 	String path = request.getContextPath();
 
-	ArrayList<HashMap<String,String>> list = (ArrayList)request.getAttribute("list");
+	/* ArrayList<HashMap<String,String>> list = (ArrayList)request.getAttribute("list");
 	HashMap<String ,String> search = (HashMap)request.getAttribute("searchInfo");
 	
 	int BLOCKSIZE = Integer.parseInt(search.get("BLOCKSIZE")); 
@@ -14,19 +14,90 @@
 	int totcnt = Integer.parseInt(search.get("totcnt"));
 	
 	String type = search.get("type");//검색 타입(제목or작성자)
-	String keyword = search.get("keyword");//검색 키워드
+	String keyword = search.get("keyword");//검색 키워드 */
 %>
 <!DOCTYPE html>
 <html>
 <head>
+<script  src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script>
+
+	var searchParam = {
+		'block' : "1",
+		'page' : "1",
+		'type' : "",
+		'keyword' : ""
+	}
+	var pagingParam = {
+		'BLOCKSIZE'	: 10,	
+		'ROWSIZE'	: 10,
+		'nowBlock'	: 1,
+		'nowPage'	: 1,
+		'totcnt'	: 1,
+	}
+
+	$(function(){			
+		fn_search();	
+	})
+
 	function fn_search(){		
 		//검색시 1페이지로 출력
-		var type = document.getElementById("S_TYPE").value;
-		var keyword = document.getElementById("S_KEYWORD").value;
 		
-		location.href="<%=path %>/board/main?block=1&page=1&type="+type+"&keyword="+keyword;
+		searchParam["type"] = $("#S_TYPE").val();
+		searchParam["keyword"] = $("#S_KEYWORD").val();
+		
+		$.ajax({
+			url:'<%= request.getContextPath()%>/board/list',
+			data: {'param' : JSON.stringify(searchParam)},
+			type:'POST',
+			contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+			dataType:'json',
+			error:function(request,status,error){
+		    	alert("[error code] : "+ request.status + "\n\n[message] :\n\n " + request.responseText + "\n[error msg] :\n " + error); //에러상황
+		    },
+			success:function(data){
+				if(data['error']){
+					alert(data['error']);
+					return;
+				}				
+				if(data['success']){
+					alert(data['success']);
+				}
+				
+				fn_drawTable(data);			
+				
+
+			}
+		});
 	}
+	
+	function fn_drawTableHeader(){
+		$("#listview").append("<tr><th style='width:10%'>글번호</th><th style='width:40%'>제목</th><th style='width:15%'>작성자</th>	<th style='width:15%'>작성일</th></tr>");
+		return;
+	}
+		
+	function fn_drawTable(data){
+		$("#listview").html("");
+
+		fn_drawTableHeader();
+		
+		if(data["list"].length == 0){
+			$("#listview").html("<tr><td colspan='4'>조회 결과가 없습니다</td></tr>")
+		}else{
+			for(var i in data["list"]){
+				var row = "";
+				row += "<tr>";
+				row += "<td>"+data["list"][i]["SEQ"]+"</td>";
+				row += "<td>"+data["list"][i]["TITLE"]+"</td>";
+				row += "<td>"+data["list"][i]["REG_NM"]+"</td>";
+				row += "<td>"+data["list"][i]["REG_DATE"]+"</td>";				
+				row += "</tr>"
+				
+				$("#listview").append(row);
+			}
+		}
+	}
+
 	function fn_write(){
 		location.href="<%=path %>/board/form";
 	}
@@ -99,12 +170,12 @@
 			<tr>
 				<td>
 					<select id="S_TYPE" >
- 						<option value="title" <%= "title".equals(type)?"selected" : "" %>>제목</option>
-						<option value="name" <%= "name".equals(type)?"selected" : "" %>>작성자</option>
+ 						<option value="title">제목</option>
+						<option value="name">작성자</option>
 					</select>
 				</td>
 				<td>
-					<input type="text" id="S_KEYWORD" value="<%= "".equals(keyword) || keyword != null ? keyword : "" %>" onKeydown="javascript:if(event.keyCode == 13) fn_search();" autofocus="autofocus">
+					<input type="text" id="S_KEYWORD" value="" onKeydown="javascript:if(event.keyCode == 13) fn_search();" autofocus="autofocus">
 				</td>
 				<td>
 					<input type="button" value='검색' onclick="fn_search()">
@@ -117,32 +188,11 @@
 		</table>
 		
    		<table id="listview">
-			<tr>
-				<th style="width:10%">글번호</th>
-				<th style="width:40%">제목</th>
-				<th style="width:15%">작성자</th>
-				<th style="width:15%">작성일</th>
-			</tr>
-	<%
-		if(list.size()<=0){
-	%>
-			<tr><td colspan="4">조회 결과가 없습니다</td></tr>	
-	<%			
-		}else{
-			for(int i = 0; i < list.size(); i++){
-	%>
-				<tr>
-					<td><%= list.get(i).get("SEQ") %></td>
-					<td><a href="<%=path %>/board/read?seq=<%= list.get(i).get("SEQ")%>"><%= list.get(i).get("TITLE")%></a></td>
-					<td><%= list.get(i).get("REG_NM")%></td>
-					<td><%= list.get(i).get("REG_DATE")%></td>
-				</tr>
-	<%		
-			}
-		}
-	%> 
-			</table>		
-			<div id="navigator" class="centered">
+			
+			
+		</table>
+					
+	<%-- 		<div id="navigator" class="centered">
 			<ul>
 	 <%
 			int startRow = (BLOCKSIZE*ROWSIZE*(nowBlock-1))+1; //출력을 시작하는 행
@@ -176,14 +226,16 @@
 			}
 		%>  
 		</ul>
-		</div> 
+		
+		</div>  
+		--%>
 		
 		</div>	
 		
 		
     </div>
   </div>
-</div>
+</div> 
 
 
 </body>

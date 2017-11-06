@@ -54,6 +54,7 @@ public class SignController extends HttpServlet{
 		response.setContentType("text/html; charset=UTF-8");
 		response.setCharacterEncoding("UTF-8");		
 		SignService sign = new SignService();
+		JSONObject result = new JSONObject();//반환할 결과
 		
 		//요청분석
 		String[] uri = request.getRequestURI().split("/");
@@ -112,8 +113,7 @@ public class SignController extends HttpServlet{
 		}else{
 			msg ="잘못된 접근입니다.";
 		}
-
-		JSONObject result = new JSONObject();		
+		
 		if(isSuccess == false) {
 			result.put("error", msg);
 		}else {
