@@ -47,7 +47,7 @@
 		searchParam["keyword"] = $("#S_KEYWORD").val();
 		
 		$.ajax({
-			url:'<%= request.getContextPath()%>/board/list',
+			url:'<%= path%>/board/list',
 			data: {'param' : JSON.stringify(searchParam)},
 			type:'POST',
 			contentType:'application/x-www-form-urlencoded; charset=UTF-8',
@@ -65,8 +65,6 @@
 				}
 				
 				fn_drawTable(data);			
-				
-
 			}
 		});
 	}
@@ -96,6 +94,82 @@
 				$("#listview").append(row);
 			}
 		}
+	
+		fn_drawNavigator(data);
+	}
+	
+	function fn_drawNavigator(data){
+		
+		$("#navigator > ul").html("");
+		
+		console.log( data["searchInfo"]);
+		searchParam["type"]			= data["searchInfo"]["type"];
+		searchParam["keyword"]		= data["searchInfo"]["keyword"];
+	
+		pagingParam["BLOCKSIZE"]	= data["searchInfo"]["BLOCKSIZE"];
+		pagingParam["ROWSIZE"]		= data["searchInfo"]["ROWSIZE"];
+		pagingParam["nowBlock"]		= data["searchInfo"]["nowPage"];
+		pagingParam["nowPage"]		= data["searchInfo"]["nowBlock"];
+		pagingParam["totcnt"]		= data["searchInfo"]["totcnt"];
+		
+		var BLOCKSIZE = pagingParam["BLOCKSIZE"]
+		var ROWSIZE = pagingParam["ROWSIZE"]
+		var nowBlock = pagingParam["nowBlock"]
+		var nowPage = pagingParam["nowPage"]
+		var totcnt = pagingParam["totcnt"]
+		
+		var startRow = (BLOCKSIZE*ROWSIZE*(nowBlock-1))+1; //출력을 시작하는 행
+		var endRow = totcnt+ROWSIZE;//출력을 종료하는 행
+		var lastBlock = ((totcnt/ROWSIZE)/BLOCKSIZE)+1;//전체 리스트의 마지막 블럭
+		var lastPage = (totcnt/ROWSIZE) + 1;// 전체 리스트의 마지막 페이지
+		
+		var navBar = "";
+		for(var i = startRow; i < endRow; i++){
+			var pgBtn = i%ROWSIZE;//페이지 네이게이션 버튼
+			var pg = i/ROWSIZE;//대상이 되는 페이지
+			if(i == startRow && nowBlock!=1){//문서 시작시 이전 페이지 이동버튼설정 (1페이지는 설정안함)
+				navBar += '<li><input type="button" value="&lt;&lt;" onclick="javacript:goToPage(1,1)"></li>';
+				navBar += '<li><input type="button" value="&lt;" onclick="javacript:goToPage('+(nowBlock-1)+','+pg+')"></li>';
+			}else if(i%ROWSIZE == 0 && i/ROWSIZE == nowPage){//현재 페이지 일경우 페이지버튼 링크X
+				navBar += '<li><b>'+pg+'</b></li>';
+			}else if(i%ROWSIZE == 0){ //0으로 나누어 떨어질경우 페이지로 분류
+				navBar += '<li><a href="">'+pg+'</a></li>';
+			}else if(i/ROWSIZE >= (BLOCKSIZE*nowBlock)){//정해진 페이지 이상을 넘어설경우 다음으로 처리	
+				navBar += '<li><input type="button" value="&gt;" onclick="javacript:goToPage('+(nowBlock+1)+','+(pg+1)+')"></li>';
+				navBar += '<li><input type="button" value="&gt;&gt;" onclick="javacript:goToPage('+lastPage+','+lastBlock+')"></li>';
+			break;
+			}
+		}		
+		
+		$("#navigator > ul").append(navBar);
+		
+		console.log(navBar);
+		
+		
+		
+<%-- 		for(var i = startRow; i < endRow; i++){
+			var pgBtn = i%ROWSIZE;//페이지 네이게이션 버튼
+			var pg = i/ROWSIZE;//대상이 되는 페이지
+			if(i == startRow && nowBlock!=1){//문서 시작시 이전 페이지 이동버튼설정 (1페이지는 설정안함)
+				<li><input type="button" value="&lt;&lt;" onclick='location.href="<%=path %>/board/main?block=1&page=1&type=<%=type%>&keyword=<%=keyword%>"'></li>
+				<li><input type="button" value="&lt;" onclick='location.href="<%=path %>/board/main?block=<%=nowBlock-1%>&page=<%=pg%>&type=<%=type%>&keyword=<%=keyword%>"'></li>
+			}else if(i%ROWSIZE == 0 && i/ROWSIZE == nowPage){//현재 페이지 일경우 페이지버튼 링크X
+				<li><b><%= pg %></b></li>
+			}else if(i%ROWSIZE == 0){ //0으로 나누어 떨어질경우 페이지로 분류
+				<li><a href="<%=path %>/board/main?block=<%=nowBlock%>&page=<%=pg%>&type=<%=type%>&keyword=<%=keyword%>"><%= pg %></a></li>
+			}else if(i/ROWSIZE >= (BLOCKSIZE*nowBlock)){//정해진 페이지 이상을 넘어설경우 다음으로 처리	
+				<li><input type="button" value="&gt;" onclick='location.href="<%=path %>/board/main?block=<%=nowBlock+1%>&page=<%=pg+1%>&type=<%=type%>&keyword=<%=keyword%>"'></li>
+				<li><input type="button" value="&gt;&gt;" onclick='location.href="<%=path %>/board/main?block=<%=lastBlock%>&page=<%=lastPage%>&type=<%=type%>&keyword=<%=keyword%>"'></li>
+			break;
+			}
+		}		 --%>
+	}
+	
+	function goToPage(block,page){
+		searchParam["block"] = block;
+		searchParam["page"] = page;
+		
+		fn_search();
 	}
 
 	function fn_write(){
@@ -181,7 +255,6 @@
 					<input type="button" value='검색' onclick="fn_search()">
 				</td>
 				<td>
-					
 					<input type="button" value='글쓰기' onclick="fn_write()">		
 				</td>
 			</tr>
@@ -192,43 +265,12 @@
 			
 		</table>
 					
-	<%-- 		<div id="navigator" class="centered">
+	 	<div id="navigator" class="centered">
 			<ul>
-	 <%
-			int startRow = (BLOCKSIZE*ROWSIZE*(nowBlock-1))+1; //출력을 시작하는 행
-			int endRow = totcnt+ROWSIZE;//출력을 종료하는 행
-			int lastBlock = ((totcnt/ROWSIZE)/BLOCKSIZE)+1;//전체 리스트의 마지막 블럭
-			int lastPage = (totcnt/ROWSIZE) + 1;// 전체 리스트의 마지막 페이지
-			
-			for(int i = startRow; i < endRow; i++){
-				int pgBtn = i%ROWSIZE;//페이지 네이게이션 버튼
-				int pg = i/ROWSIZE;//대상이 되는 페이지
-				if(i == startRow && nowBlock!=1){//문서 시작시 이전 페이지 이동버튼설정 (1페이지는 설정안함)
-		%>
-					<li><input type="button" value="&lt;&lt;" onclick='location.href="<%=path %>/board/main?block=1&page=1&type=<%=type%>&keyword=<%=keyword%>"'></li>
-					<li><input type="button" value="&lt;" onclick='location.href="<%=path %>/board/main?block=<%=nowBlock-1%>&page=<%=pg%>&type=<%=type%>&keyword=<%=keyword%>"'></li>
-		<%		
-				}else if(i%ROWSIZE == 0 && i/ROWSIZE == nowPage){//현재 페이지 일경우 페이지버튼 링크X
-		%>
-					<li><b><%= pg %></b></li>
-		<%		
-				}else if(i%ROWSIZE == 0){ //0으로 나누어 떨어질경우 페이지로 분류
-		%>
-					<li><a href="<%=path %>/board/main?block=<%=nowBlock%>&page=<%=pg%>&type=<%=type%>&keyword=<%=keyword%>"><%= pg %></a></li>
-		<%
-				}else if(i/ROWSIZE >= (BLOCKSIZE*nowBlock)){//정해진 페이지 이상을 넘어설경우 다음으로 처리	
-		%>
-					<li><input type="button" value="&gt;" onclick='location.href="<%=path %>/board/main?block=<%=nowBlock+1%>&page=<%=pg+1%>&type=<%=type%>&keyword=<%=keyword%>"'></li>
-					<li><input type="button" value="&gt;&gt;" onclick='location.href="<%=path %>/board/main?block=<%=lastBlock%>&page=<%=lastPage%>&type=<%=type%>&keyword=<%=keyword%>"'></li>
-		<%
-				break;
-				}
-			}
-		%>  
-		</ul>
-		
+				<!-- 페이징 영역 -->
+			</ul>
 		</div>  
-		--%>
+		
 		
 		</div>	
 		

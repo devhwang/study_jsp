@@ -58,7 +58,7 @@ public class DBConnectionPool {
 	public synchronized Connection getConnection() throws SQLTimeoutException, InterruptedException{
 		
 		//커넥션풀 테스트
-		String temp;
+		/*String temp;
 		StringBuffer status = new StringBuffer();
 		status.append("[");
 		for(int j = 0 ; j < connPool.length; j++) {
@@ -66,12 +66,14 @@ public class DBConnectionPool {
 			status.append(temp);
 		}
 		status.append("]");
-		logger.info(status.toString());
+		logger.info(status.toString());*/
 		
 		long currTime = System.currentTimeMillis();
-		int retryCnt = 0;
+		//int retryCnt = 0;
 		
 		do {
+			
+			
 			for(int i=0; i<this.maxConns; i++) {
 								
 				if(this.connStatus[i] != null && this.connStatus[i] == false) {//사용가능이면
@@ -87,22 +89,16 @@ public class DBConnectionPool {
 						logger.error("Connection 생성 실패");
 					}
 				}				
-			}			
+			}	
 			
-			//성고
-			if(retryCnt < 1) {
-				currTime = System.currentTimeMillis();
-				retryCnt++;
-				logger.info("retry");
+			try {			
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 			
 		}while(((System.currentTimeMillis() - currTime) <= this.timeOut));//대기가 1000*1 1초 이상되면 timeout
 
-		try {			
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		
 		throw new SQLTimeoutException("모든 Connection이 사용중입니다.");
 	}

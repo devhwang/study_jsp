@@ -37,7 +37,6 @@ public class DBConnectionTest {
 		dbPool = dbPoolManager.getDBPool("poolNameTest");
 		for(int i = 0; i < 1000; i++) {
 			try{
-				
 				queue.offer(new ThreadA(dbPool));
 				go();
 				
