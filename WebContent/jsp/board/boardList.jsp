@@ -43,6 +43,8 @@
 	function fn_search(){		
 		//검색시 1페이지로 출력
 		
+		console.log(searchParam);
+		
 		searchParam["type"] = $("#S_TYPE").val();
 		searchParam["keyword"] = $("#S_KEYWORD").val();
 		
@@ -112,17 +114,60 @@
 		pagingParam["nowPage"]		= data["searchInfo"]["nowBlock"];
 		pagingParam["totcnt"]		= data["searchInfo"]["totcnt"];
 		
-		var BLOCKSIZE = pagingParam["BLOCKSIZE"]
-		var ROWSIZE = pagingParam["ROWSIZE"]
-		var nowBlock = pagingParam["nowBlock"]
-		var nowPage = pagingParam["nowPage"]
-		var totcnt = pagingParam["totcnt"]
 		
-		var startRow = (BLOCKSIZE*ROWSIZE*(nowBlock-1))+1; //출력을 시작하는 행
-		var endRow = totcnt+ROWSIZE;//출력을 종료하는 행
-		var lastBlock = ((totcnt/ROWSIZE)/BLOCKSIZE)+1;//전체 리스트의 마지막 블럭
-		var lastPage = (totcnt/ROWSIZE) + 1;// 전체 리스트의 마지막 페이지
+		//처음부터 다시 짜기
+		/* 
+		var BLOCKSIZE = parseInt(pagingParam["BLOCKSIZE"]);
+		var ROWSIZE = parseInt(pagingParam["ROWSIZE"]);
+		var nowBlock = parseInt(pagingParam["nowBlock"]);
+		var nowPage = parseInt(pagingParam["nowPage"]);
+		var totcnt = parseInt(pagingParam["totcnt"]);//101/10
 		
+		var startRow = Math.floor(BLOCKSIZE*ROWSIZE*(nowBlock-1))+1; //출력을 시작하는 행 101부터
+		console.log(BLOCKSIZE*ROWSIZE*(nowBlock-1))
+		console.log("statrtrow:"+startRow)
+		var endRow = Math.floor(BLOCKSIZE*ROWSIZE*nowBlock)//출력을 종료하는 행 200까지
+		
+		var lastBlock = Math.floor((totcnt/ROWSIZE)/BLOCKSIZE)+1;//전체 리스트의 마지막 블럭
+		var lastPage = Math.floor(totcnt/ROWSIZE) + 1;// 전체 리스트의 마지막 페이지
+		
+		var navBar = "";
+		
+		for(var i = startRow; i <= endRow; i++){
+
+			var pgBtn = Math.floor(i%ROWSIZE);//페이지 네이게이션 버튼
+			var pg = Math.floor(i/ROWSIZE);//대상이 되는 페이지
+			
+			console.log(pgBtn,pg)
+			
+			if(i == startRow && startRow != 1){
+				
+				var temp1 = 0;
+				temp1 = nowBlock-1;
+				navBar += '<li><input type="button" value="&lt;&lt;" onclick="javacript:goToPage(1,1)"></li>';
+				navBar += '<li><input type="button" value="&lt;" onclick="javacript:goToPage('+temp1+','+pg+')"></li>';
+			}
+			
+			if(pgBtn == 0 && pg == nowPage){//현재 페이지 일경우 페이지버튼 링크X
+				navBar += '<li><b>'+pg+'</b></li>';
+			}else if(pgBtn == 0){
+				navBar += '<li><a href=""><span onclick="javacript:goToPage('+nowBlock+','+pg+')">'+pg+'</span></a></li>';
+			}
+		}
+		
+		var temp1 = 0;
+		var temp2 = 0;
+		
+		temp1 = nowBlock+1;
+		temp2 = pg+1;
+		if(totcnt > endRow){//정해진 페이지 이상을 넘어설경우 다음으로 처리	
+			navBar += '<li><input type="button" value="&gt;" onclick="javacript:goToPage('+temp1+','+temp2+')"></li>';
+			navBar += '<li><input type="button" value="&gt;&gt;" onclick="javacript:goToPage('+lastPage+','+lastBlock+')"></li>';
+			
+		}
+		
+		 */
+		/* 
 		var navBar = "";
 		for(var i = startRow; i < endRow; i++){
 			var pgBtn = i%ROWSIZE;//페이지 네이게이션 버튼
@@ -139,7 +184,7 @@
 				navBar += '<li><input type="button" value="&gt;&gt;" onclick="javacript:goToPage('+lastPage+','+lastBlock+')"></li>';
 			break;
 			}
-		}		
+		}		 */
 		
 		$("#navigator > ul").append(navBar);
 		
