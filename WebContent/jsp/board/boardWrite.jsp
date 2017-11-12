@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<% request.setCharacterEncoding("UTF-8"); %>
+<%	request.setCharacterEncoding("UTF-8");
+	String path = request.getContextPath();
+%>
 <!-- 
 1. HTML로 게시판 입력 페이지를 작성
 2. 경로 및 파일명 : WebContent > html > boradWrite.html
@@ -10,7 +12,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<link rel="stylesheet" href="<%= request.getContextPath() %>/css/common.css" type="text/css">
+<link rel="stylesheet" href="<%= path %>/css/common.css" type="text/css">
 <style type="text/css">
 		
 	#view {
@@ -54,7 +56,7 @@
 		}
 	
 		$.ajax({
-			url:'<%= request.getContextPath()%>/board/write',
+			url:'<%= path%>/board/write',
 			data: {'param' : JSON.stringify(param)},
 			type:'POST',
 			contentType:'application/x-www-form-urlencoded; charset=UTF-8',
@@ -72,7 +74,7 @@
 					alert(data['success']);
 				}
 				
-				location.href='<%= request.getContextPath()%>/board/main'
+				location.href='<%= path%>/board/main'
 			}
 		});
 	}
